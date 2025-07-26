@@ -25,4 +25,12 @@ public class CityService {
         log.warn("No city found with pinCode {}. Returning null", pinCode);
         return null;
     }
+
+    public City addCity(City city){
+        return cityRepository.save(city);
+    }
+
+    public List<City> getAll(){
+        return cityRepository.findAll();
+    }
 }

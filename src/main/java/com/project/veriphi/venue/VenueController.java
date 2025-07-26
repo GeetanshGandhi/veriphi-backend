@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/venue")
@@ -29,5 +31,10 @@ public class VenueController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PostMapping("/getByCity")
+    public List<Venue> getByCity(@RequestBody String pinCode){
+        return venueService.getVenuesByCity(pinCode);
     }
 }

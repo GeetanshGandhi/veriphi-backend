@@ -24,7 +24,6 @@ public class EventSchedule {
 
     @Id
     private Date date;
-
     @Id
     private String startTime;
 

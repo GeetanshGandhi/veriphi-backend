@@ -33,19 +33,10 @@ public class EventScheduleService {
         esRepo.saveAll(eligibleSchedules);
     }
 
-    public List<EventSchedule> getEventScheduleByVenue(long venueId){
-        Venue venue = venueService.getById(venueId);
-        if(venue == null){
-            log.error("Cannot find venue with ID {}. Returning empty list of eventSchdule", venueId);
-            return new ArrayList<>();
-        }
-        return esRepo.findAllByVenue(venue);
-    }
-
-    public List<EventSchedule> getEventScheduleByEvent(long eventId){
+    public List<EventSchedule> getEventScheduleByEvent(long eventId) {
         Event event = eventService.getById(eventId);
         if(event == null){
-            log.error("Cannot find event with ID {}. Returning empty list of eventSchdule", eventId);
+            log.error("Cannot find event with ID {}. Returning empty list of eventSchedule", eventId);
             return new ArrayList<>();
         }
         return esRepo.findAllByEvent(event);
@@ -56,7 +47,7 @@ public class EventScheduleService {
         Venue venue = venueService.getById(venueId);
         if(event == null || venue == null){
             log.error("Cannot find schedule for given eventId {} and venueId {}. Object present: {}. Returning empty " +
-                      "list of eventSchdule",
+                      "list of eventSchedule",
                     eventId, venueId, event==null?venue:event);
             return new ArrayList<>();
         }
@@ -91,12 +82,8 @@ public class EventScheduleService {
     public EventSchedule addEventSchedule(EventSchedule eventSchedule){
         try{
             EventSchedule saved = esRepo.save(eventSchedule);
-            if(saved.equals(eventSchedule)){
-                log.info("Event Schedule saved successfully.");
-                return saved;
-            }
-            log.warn("cannot save the given event schedule!");
-            return null;
+            log.info("Event Schedule saved successfully.");
+            return saved;
         } catch (Exception e){
             log.error("Error occurred during saving the event schedule. Error: {}", e.getMessage());
             return null;

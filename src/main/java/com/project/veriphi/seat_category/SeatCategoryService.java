@@ -28,6 +28,7 @@ public class SeatCategoryService {
             log.warn("No matching seat category found. Venue: {}, Event: {}",
                     venue!=null?venue.toString():"null",
                     event!=null?event.toString():"null");
+            return null;
         }
         return scRepo.findAllByEventAndVenue(event, venue);
     }

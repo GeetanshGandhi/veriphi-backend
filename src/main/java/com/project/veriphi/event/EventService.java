@@ -1,9 +1,11 @@
 package com.project.veriphi.event;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -64,5 +66,26 @@ public class EventService {
             return null;
         }
         return event.get();
+    }
+
+    public String updateApproval(long eventId, boolean status){
+        try {
+            Optional<Event> found = eventRepository.findById(eventId);
+            if(found.isEmpty()){
+                log.warn("No event with id {} found for update.", eventId);
+                return "id not found";
+            }
+            Event event = found.get();
+            event.setApproved(status);
+            return "success";
+        } catch (Exception e){
+            log.error("Error occurred while updating event approval. Error: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        Date date = new Date();
+        System.out.println(date.getTime());
     }
 }

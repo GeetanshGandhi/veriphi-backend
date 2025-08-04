@@ -39,4 +39,17 @@ public class EventController {
         }
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
+
+    @PostMapping("/updateApproval")
+    public ResponseEntity<String> updateApproval(@RequestParam("eventId") long eventId,
+                                                 @RequestParam boolean status) {
+        String res = eventService.updateApproval(eventId, status);
+        if(res == null) {
+            return new ResponseEntity<>("error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if(res.equals("no id found")) {
+            return new ResponseEntity<>(res, HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
 }

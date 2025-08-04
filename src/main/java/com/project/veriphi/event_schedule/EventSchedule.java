@@ -10,11 +10,14 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
+@Table(
+        name = "event_schedule",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"date", "event_id", "start_time", "venue_id"})
+)
 @IdClass(EventScheduleId.class)
 @Getter
 @Setter

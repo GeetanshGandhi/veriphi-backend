@@ -23,6 +23,8 @@ public class Booking {
     private Date bookingDate;
     private boolean isGroup;
     private int numberOfSeats;
+
+    //can be: booked, allotted, cancelled, event_completed
     private String status;
 
     @ManyToOne
@@ -32,10 +34,10 @@ public class Booking {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "eventId"),
-            @JoinColumn(name = "venueId"),
-            @JoinColumn(name = "date"),
-            @JoinColumn(name = "startTime")
+            @JoinColumn(name = "eventId", referencedColumnName = "eventId"),
+            @JoinColumn(name = "venueId", referencedColumnName = "venueId"),
+            @JoinColumn(name = "date", referencedColumnName = "date"),
+            @JoinColumn(name = "startTime", referencedColumnName = "startTime")
     })
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private EventSchedule eventSchedule;

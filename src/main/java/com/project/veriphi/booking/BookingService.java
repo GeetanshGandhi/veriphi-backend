@@ -1,6 +1,7 @@
 package com.project.veriphi.booking;
 
 import com.project.veriphi.event_schedule.EventSchedule;
+import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
 import com.project.veriphi.utils.BookingIdGenerator;
@@ -46,9 +47,9 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getAllByEventSchedule(EventSchedule eventSchedule) {
+    public List<Booking> getAllByEventScheduleAndSeatCategory(EventSchedule eventSchedule, SeatCategory seatCategory) {
         try {
-            return bookingRepository.findAllByEventSchedule(eventSchedule);
+            return bookingRepository.findAllByEventScheduleAndSeatCategory(eventSchedule, seatCategory);
         } catch (Exception e){
             log.error("Error in getAllByEventSchedule. Error: {}", e.getMessage());
             return null;

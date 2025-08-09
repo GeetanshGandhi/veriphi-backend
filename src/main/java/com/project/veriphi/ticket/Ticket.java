@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document
+@Document(collection = "veriphiTicket")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

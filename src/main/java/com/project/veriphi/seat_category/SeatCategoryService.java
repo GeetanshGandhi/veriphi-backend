@@ -4,6 +4,7 @@ import com.project.veriphi.event.Event;
 import com.project.veriphi.event.EventService;
 import com.project.veriphi.venue.Venue;
 import com.project.veriphi.venue.VenueService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,23 @@ public class SeatCategoryService {
             return null;
         }
         return scRepo.findAllByEventAndVenue(event, venue);
+    }
+
+    public List<SeatCategory> getByEventAndVenue(@NonNull Event event, @NonNull Venue venue) {
+        return scRepo.findAllByEventAndVenue(event, venue);
+    }
+
+    public String addSeatCategories(List<SeatCategory> categories) {
+        try{
+            List<SeatCategory> saved = scRepo.saveAll(categories);
+            if(saved.size() == categories.size()){
+                log.info("saved {} seat_categories successfully!", categories.size());
+                return "success";
+            }
+            return "failure";
+        } catch (Exception e){
+            log.error("Error while adding seat categories: {}", e.getMessage());
+            return "error";
+        }
     }
 }

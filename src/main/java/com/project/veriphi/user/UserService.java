@@ -24,9 +24,6 @@ public class UserService {
 
     public User register(User user, String password){
         try{
-            if(!EmailValidator.isValidEmail(user.getEmail())){
-                return new User("invalid");
-            }
             User registered = userRepository.save(user);
             UserAuth registeredAuth = userAuthRepository.save(new UserAuth(user.getEmail(), password));
             if(registered.getEmail().equals(user.getEmail()) &&
@@ -36,6 +33,7 @@ public class UserService {
             }
             return new User("unknown");
         } catch (Exception e){
+            e.printStackTrace();
             log.error("Cannot register user. Error: {}", e.getMessage());
             return null;
         }

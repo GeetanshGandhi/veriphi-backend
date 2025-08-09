@@ -19,6 +19,7 @@ public class Seat {
     private String seatNumber;
 
     private String categoryId;
+    private boolean allotment;
 
     @Transient
     private SeatCategory seatCategory;

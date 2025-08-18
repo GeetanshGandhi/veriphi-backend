@@ -11,7 +11,7 @@ public class LiveBookingCache {
 
     // key: level 1: <eventId>+"-"+<venueId>, level 2: <date> + "-" <time>, both as string
     // level 3: seat categoryId
-    // value: available seats (integer)
+    // value: available number of seats (integer)
     private static Map<String, Map<String, Map<String, Integer>>> map = new HashMap<>();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 //    public String initiateForEventSchedule(EventSchedule schedule, List<SeatCategory> availableCategories){

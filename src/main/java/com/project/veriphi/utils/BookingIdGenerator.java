@@ -10,5 +10,4 @@ public class BookingIdGenerator {
         generatedId.append(System.currentTimeMillis()/1000);
         return generatedId.toString();
     }
-
 }

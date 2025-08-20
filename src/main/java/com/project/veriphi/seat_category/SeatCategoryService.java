@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -36,6 +37,20 @@ public class SeatCategoryService {
 
     public List<SeatCategory> getByEventAndVenue(@NonNull Event event, @NonNull Venue venue) {
         return scRepo.findAllByEventAndVenue(event, venue);
+    }
+
+    public SeatCategory getById(String categoryId) {
+        try {
+            Optional<SeatCategory> sc = scRepo.findById(categoryId);
+            if(sc.isEmpty()) {
+                log.error("no category found with ID: {}", categoryId);
+                return new SeatCategory();
+            }
+            return sc.get();
+        } catch (Exception e) {
+            log.error("Error occurred while fetching seatCategory by id: {}", e.getMessage());
+            return null;
+        }
     }
 
     public String addSeatCategories(List<SeatCategory> categories) {

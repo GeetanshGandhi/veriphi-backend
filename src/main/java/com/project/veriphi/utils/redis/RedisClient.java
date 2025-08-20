@@ -1,15 +1,12 @@
-package com.project.veriphi.utils;
+package com.project.veriphi.utils.redis;
 
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.DefaultJedisClientConfig;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisClientConfig;
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.params.GetExParams;
 
@@ -26,19 +23,8 @@ public class RedisClient {
     private int port;
     private String password;
 
+    @Autowired
     private UnifiedJedis jedis;
-
-    @PostConstruct
-    public void init() {
-        log.info("initializing redis connection to URL: "+host + ":" + port);
-        HostAndPort node = new HostAndPort(host, port);
-        JedisClientConfig config = DefaultJedisClientConfig.builder()
-                .password(password).build();
-        jedis = new UnifiedJedis(node, config);
-        jedis.setex("key4", 50, "value4");
-        for(int i = 0; i<10000; i++){}
-        System.out.println("data found: "+jedis.getEx("key4", new GetExParams()));
-    }
 
     public String setString(String key, String value){
         try{
@@ -58,9 +44,13 @@ public class RedisClient {
         }
     }
 
-    public String getString(String key){
+    public String getString(String key, boolean expirationSet){
         try{
-            String output = jedis.get(key);
+            if(!expirationSet){
+                String output = jedis.get(key);
+                return output==null ? "null" : output;
+            }
+            String output = jedis.getEx(key, new GetExParams());
             return output==null ? "null" : output;
         } catch (Exception e){
             log.error("Error occurred while getting string from redis: {}", e.getMessage());
@@ -68,13 +58,13 @@ public class RedisClient {
         }
     }
 
-    public String getString(String key, boolean expirationSet){
-        try{
-            String output = jedis.getEx(key, new GetExParams());
-            return output==null ? "null" : output;
-        } catch (Exception e){
-            log.error("Error occurred while getting string from redis: {}", e.getMessage());
-            return  null;
+    public String deleteKey(String key) {
+        try {
+            long out = jedis.del(key);
+            return out == 1 ? "success" : "failure";
+        } catch (Exception e) {
+            log.error("Error while deleting cache key: {}", e.getMessage());
+            return null;
         }
     }
 
@@ -88,10 +78,9 @@ public class RedisClient {
         }
     }
 
-    public String updateHash(String key, String field, String value) {
+    public String incrementHash(String key, String field, long value) {
         try{
-            long output = jedis.hset(key, field, value);
-            if(output != 1) return "failure";
+            long output = jedis.hincrBy(key, field, value);
             return "success";
         } catch (Exception e) {
             log.error("Error while updating hash: {}", e.getMessage());
@@ -103,7 +92,7 @@ public class RedisClient {
             String output = jedis.hget(key, field);
             return output == null ? "null" : output;
         } catch (Exception e) {
-            log.error("Error while updating hash: {}", e.getMessage());
+            log.error("Error while getting hash field: {}", e.getMessage());
             return null;
         }
     }
@@ -111,7 +100,7 @@ public class RedisClient {
         try{
             return jedis.hgetAll(key);
         } catch (Exception e) {
-            log.error("Error while updating hash: {}", e.getMessage());
+            log.error("Error while getting hash: {}", e.getMessage());
             return null;
         }
     }

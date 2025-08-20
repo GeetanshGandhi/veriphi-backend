@@ -2,6 +2,7 @@ package com.project.veriphi.event_schedule;
 
 import com.project.veriphi.event.Event;
 import com.project.veriphi.event.EventService;
+import com.project.veriphi.live_booking.LiveBookingService;
 import com.project.veriphi.venue.Venue;
 import com.project.veriphi.venue.VenueService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +24,17 @@ public class EventScheduleService {
     VenueService venueService;
     @Autowired
     EventService eventService;
+    @Autowired
+    LiveBookingService liveBookingService;
 
-    @Scheduled(cron = "0 0 12 * * *", zone = "IST")
+    @Scheduled(cron = "0 55 11 * * *", zone = "IST")
     private void scheduledSaleStart(){
         List<EventSchedule> eligibleSchedules = esRepo.findAllBySaleLiveAndScheduledSaleStart(false, new Date());
         for(EventSchedule es : eligibleSchedules){
             es.setSaleLive(true);
         }
         esRepo.saveAll(eligibleSchedules);
+        liveBookingService.initiateBookingProcess(eligibleSchedules);
     }
 
     public List<EventSchedule> getEventScheduleByEvent(long eventId) {

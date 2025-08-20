@@ -8,6 +8,7 @@ import com.project.veriphi.seat.Seat;
 import com.project.veriphi.seat.SeatService;
 import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
+import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -31,6 +32,8 @@ public class TicketService {
     SeatService seatService;
     @Autowired
     EventScheduleService esSvc;
+    @Autowired
+    TicketFaceBindService tfbService;
 
     @Async
     public void initiateTicketingForEventSchedule(long eventId, long venueId, Date date, String startTime) {
@@ -73,6 +76,8 @@ public class TicketService {
                 }
                 ticketRepository.saveAll(tickets);
                 seatService.updateSeatAllotment(allottedSeats);
+
+                String ticketBindingOutput = tfbService.callForBinding(tickets, booking.getBookingId());
                 log.info("Ticket processing completed for bookingId: {}", booking.getBookingId());
             }
         });

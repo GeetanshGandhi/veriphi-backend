@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/s_cat")
+@RequestMapping("/seatCategory")
 public class SeatCategoryController {
 
     @Autowired

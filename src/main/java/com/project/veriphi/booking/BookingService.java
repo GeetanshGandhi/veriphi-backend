@@ -38,7 +38,7 @@ public class BookingService {
         try{
             User user = userService.getByEmail(userEmail);
             if(user == null) {
-                return new ArrayList<>();
+                return new ArrayList<>(List.of(new Booking("no-user")));
             }
             return bookingRepository.findAllByUser(user);
         } catch (Exception e){

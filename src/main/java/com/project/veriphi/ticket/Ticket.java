@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
-
-@Document(collection = "veriphiTicket")
+@Document
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,12 +15,12 @@ public class Ticket {
     @Id
     private String ticketNumber;
     private String bookingId;
-    private String userName;
     private long eventId;
     private long venueId;
-    private Date date;
+    private String date;
     private String startTime;
     private String bookingEmail;
+    private String seatCategory;
     private String seatNumber;
 
 }

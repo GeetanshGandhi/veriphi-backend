@@ -37,6 +37,7 @@ public class OrganiserController {
         }
     }
 
+    @PostMapping("/login")
     public ResponseEntity<Organiser> login(@RequestParam("email") String email,
                                            @RequestParam("password") String password){
         Organiser response = organiserService.login(email, password);

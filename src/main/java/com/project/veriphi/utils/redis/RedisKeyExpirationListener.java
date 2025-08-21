@@ -14,14 +14,14 @@ public class RedisKeyExpirationListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         String expiredKey = message.toString();
-        if(expiredKey.startsWith("User:")) {
-            String[] components = expiredKey.split(":");
-            String esKey = "EventSchedule:"+
+        if(expiredKey.startsWith("User#")) {
+            String[] components = expiredKey.split("#");
+            String esKey = "EventSchedule#"+
                     components[2]+
-                    ":"+components[3]+
-                    ":"+components[4]+
-                    ":"+components[5];
-            client.incrementHash(esKey, components[6], Long.parseLong(components[6]));
+                    "#"+components[3]+
+                    "#"+components[4]+
+                    "#"+components[5];
+            client.incrementHash(esKey, components[6], Long.parseLong(components[7]));
         }
     }
 }

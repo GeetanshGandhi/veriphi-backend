@@ -1,6 +1,5 @@
 package com.project.veriphi.city;
 
-import com.project.veriphi.venue.Venue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -25,5 +24,9 @@ public class City {
         if(obj==null || this.getClass() != obj.getClass()) return false;
         City that = (City) obj;
         return this.pinCode.equals(that.pinCode);
+    }
+
+    public City(String cityName) {
+        this.cityName = cityName;
     }
 }

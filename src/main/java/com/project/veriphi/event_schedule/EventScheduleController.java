@@ -2,6 +2,7 @@ package com.project.veriphi.event_schedule;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,9 +63,10 @@ public class EventScheduleController {
     @PostMapping("/getById")
     public ResponseEntity<EventSchedule> getById(@RequestParam("eventId") long eventId,
                                                  @RequestParam("venueId") long venueId,
-                                                 @RequestParam("date") Date date,
+                                                 @RequestParam("date") String date,
                                                  @RequestParam("startTime") String startTime){
         try{
+            System.out.println(date);
             return new ResponseEntity<>(esService.getById(eventId, venueId, date, startTime), HttpStatus.OK);
         } catch (Exception e){
             log.error("Error occurred while executing getById. Error: {}", e.getMessage());

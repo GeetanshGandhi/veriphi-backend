@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,18 +15,17 @@ import java.util.Map;
 @Slf4j
 public class LiveBookingCache {
 
-    private static final long USER_EXPIRATION_TIME = 15 * 60L + 5;
+    private static final long USER_EXPIRATION_TIME = 20;
 
     @Autowired
-    private RedisClient redisClient;
-
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    RedisClient redisClient;
 
     // key: "EventSchedule":eventId(long):venueId(long):date(dd-MM-yyyy string):startTime(string)
     // field: seatCategoryId (string)
     // value: available number of seats (integer)
     public String initiateForEventSchedule(EventSchedule schedule, List<SeatCategory> availableCategories,
                                            int trialCount){
+        log.info("Initiating cache for schedule {}", createEventScheduleKey(schedule));
         if(trialCount == 0) {
             log.error("Maximum initialization trials completed. Cannot try further.");
             return "retry_exhaustion";
@@ -42,9 +40,8 @@ public class LiveBookingCache {
             if(output == null){
                 log.error("Error occurred in RedisClient.");
                 return initiateForEventSchedule(schedule, availableCategories, trialCount - 1);
-            } if(output.equals("partial")) {
-                return initiateForEventSchedule(schedule, availableCategories, trialCount - 1);
-            } else return output;
+            }
+            return output;
         } catch (Exception e){
             log.error("Error occurred while initializing cache : {}", e.getMessage());
             return null;
@@ -61,7 +58,7 @@ public class LiveBookingCache {
             String key = createEventScheduleKey(schedule);
             String updateResponse = redisClient.incrementHash(key, categoryId, -seatsToDecrease);
             if(updateResponse == null || updateResponse.equals("failure")) {
-                log.error("Cannot update seat availability for eventSched and seatCategory. Retrying...");
+                log.error("Cannot update seat availability for eventSchedule and seatCategory. Retrying...");
                 return updateSeatCountForEventSchedule(schedule, categoryId, seatsToDecrease, retryCount - 1);
             }
             return updateResponse;
@@ -111,21 +108,21 @@ public class LiveBookingCache {
 
     private String createUserKey(EventSchedule schedule, String seatCategoryId, String userEmail,
                                  int numberOfSeats) {
-        return "User:"+
+        return "User#"+
                 userEmail+
-                ":"+schedule.getEvent().getEventId()+
-                ":"+schedule.getVenue().getVenueId()+
-                ":"+dateFormat.format(schedule.getDate())+
-                ":"+schedule.getStartTime()+
-                ":"+seatCategoryId+
-                ":"+numberOfSeats;
+                "#"+schedule.getEvent().getEventId()+
+                "#"+schedule.getVenue().getVenueId()+
+                "#"+schedule.getDate()+
+                "#"+schedule.getStartTime()+
+                "#"+seatCategoryId+
+                "#"+numberOfSeats;
     }
 
     private String createEventScheduleKey(EventSchedule schedule) {
-        return "EventSchedule:"+
+        return "EventSchedule#"+
                 schedule.getEvent().getEventId()+
-                ":"+schedule.getVenue().getVenueId()+
-                ":"+dateFormat.format(schedule.getDate())+
-                ":"+schedule.getStartTime();
+                "#"+schedule.getVenue().getVenueId()+
+                "#"+schedule.getDate()+
+                "#"+schedule.getStartTime();
     }
 }

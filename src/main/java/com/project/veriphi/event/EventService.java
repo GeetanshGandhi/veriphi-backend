@@ -17,6 +17,7 @@ public class EventService {
 
     public Event addEvent(Event event){
         try{
+            event.setApproved(false);
             Event saved = eventRepository.save(event);
             if(saved.getEventId() > 0){
                 log.info("Event with id {} saved successfully", event.getEventId());
@@ -41,6 +42,7 @@ public class EventService {
         savedEvent.setCategory(newDetails.getCategory());
         savedEvent.setName(newDetails.getName());
         savedEvent.setDescription(newDetails.getDescription());
+        savedEvent.setApproved(true);
         return eventRepository.save(savedEvent);
     }
 
@@ -77,6 +79,7 @@ public class EventService {
             }
             Event event = found.get();
             event.setApproved(status);
+            eventRepository.save(event);
             return "success";
         } catch (Exception e){
             log.error("Error occurred while updating event approval. Error: {}", e.getMessage());

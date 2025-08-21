@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,14 +28,25 @@ public class EventScheduleService {
     @Autowired
     LiveBookingService liveBookingService;
 
-    @Scheduled(cron = "0 55 11 * * *", zone = "IST")
+    @Scheduled(cron = "0 06 17 * * *", zone = "IST")
     private void scheduledSaleStart(){
-        List<EventSchedule> eligibleSchedules = esRepo.findAllBySaleLiveAndScheduledSaleStart(false, new Date());
+        log.info("Initiating ticket sale for today.");
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        List<EventSchedule> eligibleSchedules = esRepo.findAllBySaleLiveAndScheduledSaleStart(false, currentDate);
+        log.info("Number of eligible schedules found that can go live for sale today: {}", eligibleSchedules.size());
+        if(eligibleSchedules.isEmpty()) return;
         for(EventSchedule es : eligibleSchedules){
             es.setSaleLive(true);
         }
         esRepo.saveAll(eligibleSchedules);
-        liveBookingService.initiateBookingProcess(eligibleSchedules);
+        String initCacheResponse = liveBookingService.initiateBookingProcess(eligibleSchedules);
+        for(int i = 0; i<5; i++){
+            if(initCacheResponse.equals("success")) break;
+            initCacheResponse = liveBookingService.initiateBookingProcess(eligibleSchedules);
+            if(i == 4 && !initCacheResponse.equals("success")) {
+                log.error("Failed to initialize cache for one or more EventSchedules.");
+            }
+        }
     }
 
     public List<EventSchedule> getEventScheduleByEvent(long eventId) {
@@ -72,9 +84,11 @@ public class EventScheduleService {
         return eventSchedules;
     }
 
-    public EventSchedule getById(long eventId, long venueId, Date date, String startTime){
+    public EventSchedule getById(long eventId, long venueId, String date, String startTime){
         Event event = eventService.getById(eventId);
         Venue venue = venueService.getById(venueId);
+        System.out.println("event: "+event);
+        System.out.println("venue: "+venue);
         if(event == null || venue == null){
             log.error("Cannot find schedule for given eventId {} and venueId {}. Object present: {}. Returning null",
                     eventId, venueId, event==null?venue:event);

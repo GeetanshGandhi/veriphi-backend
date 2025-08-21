@@ -10,7 +10,6 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -26,7 +25,7 @@ import java.util.Objects;
 public class EventSchedule {
 
     @Id
-    private Date date;
+    private String date;
     @Id
     private String startTime;
 
@@ -44,7 +43,7 @@ public class EventSchedule {
 
     private double durationHours;
     private int maxAttendees;
-    private Date scheduledSaleStart;
+    private String scheduledSaleStart;
     private boolean saleLive;
 
     @Override
@@ -60,5 +59,14 @@ public class EventSchedule {
                 this.durationHours==that.durationHours &&
                 this.saleLive == that.isSaleLive() &&
                 this.maxAttendees == that.maxAttendees;
+    }
+
+    @Override
+    public String toString() {
+        return "EventSchedule: "+
+                this.event.getEventId()+
+                "-"+this.venue.getVenueId()+
+                "-"+this.date+
+                "-"+this.startTime;
     }
 }

@@ -3,7 +3,6 @@ package com.project.veriphi.live_booking;
 import com.project.veriphi.booking.Booking;
 import com.project.veriphi.booking.BookingService;
 import com.project.veriphi.event_schedule.EventSchedule;
-import com.project.veriphi.event_schedule.EventScheduleService;
 import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -23,9 +21,6 @@ import java.util.List;
 public class LiveBookingService {
 
     private static final int TRIAL_COUNT = 5;
-    private static final int MAXIMUM_USERS_PROCESSING = 1000;
-
-    private final HashMap<String, Integer> currentUsersProcessing = new HashMap<>();
 
     @Autowired
     LiveBookingCache cache;
@@ -35,22 +30,20 @@ public class LiveBookingService {
     BookingService bookingService;
     @Autowired
     UserService userService;
-    @Autowired
-    EventScheduleService esSvc;
 
     public String initiateBookingProcess(List<EventSchedule> schedules) {
         try {
             int completeCount = 0;
             for(EventSchedule schedule : schedules) {
+                log.info("Initiating booking process for schedule {}", schedule);
                 List<SeatCategory> categories = scSvc.getByEventAndVenue(schedule.getEvent(), schedule.getVenue());
                 String cacheResponse = cache.initiateForEventSchedule(schedule, categories, TRIAL_COUNT);
                 if(cacheResponse == null) {
-                    log.error("Error occurred in initBookingProcess for eventSchedule: {}", schedule.toString());
+                    log.error("Error occurred in initBookingProcess for eventSchedule: {}", schedule);
                 } else if(cacheResponse.equals("retry_exhaustion")) {
-                    log.error("Retry exhaustion in initiateForEventSchedule for eventSchedule: {}",
-                            schedule.toString());
+                    log.error("Retry exhaustion in initiateForEventSchedule for eventSchedule: {}", schedule);
                 } else {
-                    log.info("BookingProcess successfully initiated for eventSchedule: {}", schedule.toString());
+                    log.info("BookingProcess successfully initiated for eventSchedule: {}", schedule);
                     completeCount++;
                 }
             }
@@ -65,13 +58,18 @@ public class LiveBookingService {
                                                 int numberOfTickets) {
         try {
             String bookingId = BookingIdGenerator.createBookingID(userEmail);
-            String cacheResponse = cache.addUserBookingToCache(schedule, categoryId, userEmail, bookingId,
+            String cacheUserResponse = cache.addUserBookingToCache(schedule, categoryId, userEmail, bookingId,
                     numberOfTickets);
-            if(cacheResponse == null || cacheResponse.equals("failure")) {
+            if(cacheUserResponse == null || cacheUserResponse.equals("failure")) {
                 log.error("could not add user to cache.");
                 return null;
             }
-            return cacheResponse;
+            String seatResponse = cache.updateSeatCountForEventSchedule(schedule, categoryId, numberOfTickets, 5);
+            if(seatResponse == null || seatResponse.equals("failure")) {
+                log.error("could not update seats in cache.");
+                return null;
+            }
+            return cacheUserResponse;
         } catch (Exception e) {
             log.error("Error while initiating user booking: {}", e.getMessage());
             return null;
@@ -82,7 +80,7 @@ public class LiveBookingService {
         String cacheResponse = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfSeats);
         if(cacheResponse == null ){
             log.error("User TTL expired for {}.", userEmail);
-            return new Booking("ttlexpired");
+            return new Booking("TTL_expired");
         }
         User user = userService.getByEmail(userEmail);
         SeatCategory seatCategory = scSvc.getById(categoryId);

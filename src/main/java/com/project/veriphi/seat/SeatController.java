@@ -41,4 +41,11 @@ public class SeatController {
 
         }
     }
+
+    @Autowired
+    SeatGenerator seatGenerator;
+    @GetMapping("/genseats")
+    public void seatgenerate(){
+        seatGenerator.generate();
+    }
 }

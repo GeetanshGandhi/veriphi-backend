@@ -39,7 +39,7 @@ public class RedisClient {
         try{
             return jedis.setex(key, expireSeconds,value);
         } catch (Exception e){
-            log.error("Error occurred while putting string to redis: {}", e.getMessage());
+            log.error("Error occurred while putting string-expiry to redis: {}", e.getMessage());
             return null;
         }
     }
@@ -69,9 +69,15 @@ public class RedisClient {
     }
 
     public String createHash(String key, Map<String, String> values) {
+        System.out.println("creating hash...");
         try{
-            long output = jedis.hset(key, values);
-            return output>0 && output!=values.size() ? "partial" : "success";
+            long totalAdditions = 0;
+            for(Map.Entry<String, String> e: values.entrySet()) {
+                System.out.println("entry 1");
+                long output = jedis.hset(key, e.getKey(), e.getValue());
+                totalAdditions += output;
+            }
+            return totalAdditions == values.size() ? "success" : "failure";
         } catch (Exception e){
             log.error("Error occurred while creating hash: {}", e.getMessage());
             return  null;

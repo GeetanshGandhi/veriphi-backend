@@ -17,7 +17,7 @@ public class EventScheduleId implements Serializable {
 
     private long event;
     private long venue;
-    private Date date;
+    private String date;
     private String startTime;
 
     @Override

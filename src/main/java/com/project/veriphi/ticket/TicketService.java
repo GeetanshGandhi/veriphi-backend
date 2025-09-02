@@ -68,7 +68,8 @@ public class TicketService {
                                     eventSchedule.getStartTime(),
                                     booking.getUser().getEmail(),
                                     booking.getSeatCategory().getName(),
-                                    seats.get(seatIndex).getSeatNumber()
+                                    seats.get(seatIndex).getSeatNumber(),
+                                    false
                             )
                     );
                     Seat updatedSeat = seats.get(seatIndex);

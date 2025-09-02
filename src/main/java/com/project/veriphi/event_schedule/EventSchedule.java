@@ -22,7 +22,7 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventSchedule {
+public class    EventSchedule {
 
     @Id
     private String date;

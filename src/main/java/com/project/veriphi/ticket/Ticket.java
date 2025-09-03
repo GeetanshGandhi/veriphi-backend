@@ -24,4 +24,7 @@ public class Ticket {
     private String seatNumber;
     private boolean isResold;
 
+    public Ticket(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
 }

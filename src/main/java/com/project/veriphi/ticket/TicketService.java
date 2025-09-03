@@ -43,13 +43,13 @@ public class TicketService {
     private void createTicketsForEventSchedule(EventSchedule eventSchedule) {
         log.info("Initiating ticketing process for EventSchedule: {}", eventSchedule.toString());
         List<SeatCategory> categories = scSvc.getByEventAndVenue(eventSchedule.getEvent(), eventSchedule.getVenue());
-        log.info("{} categories found for eventSchedule {}", categories.size(), eventSchedule.toString());
+        log.info("{} categories found for eventSchedule {}", categories.size(), eventSchedule);
         categories.forEach(cat ->{
             List<Seat> seats = seatService.getSeatsByCategory(cat.getCategoryId());
             List<Booking> bookings = bookingService.getAllByEventScheduleAndSeatCategory(eventSchedule, cat);
             log.info("Ticketing process beginning for {} bookings of {} category of {} schedule", bookings.size(),
-                    cat.getName(), eventSchedule.toString());
-            if(bookings == null || bookings.isEmpty()) {
+                    cat.getName(), eventSchedule);
+            if(bookings.isEmpty()) {
                 return;
             }
             int seatIndex = 0;
@@ -85,5 +85,18 @@ public class TicketService {
                 log.info("Ticket processing completed for bookingId: {}", booking.getBookingId());
             }
         });
+    }
+
+    public List<Ticket> getAllById(List<String> ticketNumber) {
+        try {
+            if(ticketNumber.isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<Ticket> found = ticketRepository.findAllById(ticketNumber);
+            return found;
+        } catch (Exception e) {
+            log.error("error occurred while getAllById: {}", e.getMessage());
+            return null;
+        }
     }
 }

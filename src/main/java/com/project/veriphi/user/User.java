@@ -22,10 +22,6 @@ public class User {
     private String lastName;
     private int age;
     private String gender;
-    private String billingAddress;
-    private String billingCity;
-    private String billingState;
-    private String billingPincode;
 
     public User(String email) {
         this.email = email;

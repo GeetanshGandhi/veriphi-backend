@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersistentJob {
 
+    private static long no = 0;
     @Scheduled(fixedRate = 5 * 60 * 1000)
     public void powerUp(){
+        log.info("persisting health check {}...", no);
     }
 }

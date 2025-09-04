@@ -12,5 +12,6 @@ public class PersistentJob {
     @Scheduled(fixedRate = 5 * 60 * 1000)
     public void powerUp(){
         log.info("persisting health check {}...", no);
+        no++;
     }
 }

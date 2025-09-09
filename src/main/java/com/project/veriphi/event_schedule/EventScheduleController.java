@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+
+
 @RestController
 @CrossOrigin
 @RequestMapping("/eventSchedule")
@@ -73,4 +75,10 @@ public class EventScheduleController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+   @PostMapping("/getByCity")
+    public ResponseEntity<List<EventSchedule>> getByCity(@RequestParam("pinCode") String pinCode) {
+        return new ResponseEntity<>(esService.getByCity(pinCode), HttpStatus.OK);
+    }
+    
 }

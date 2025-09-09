@@ -107,4 +107,9 @@ public class EventScheduleService {
             return null;
         }
     }
+
+    public List<EventSchedule> getByCity(String pinCode) {
+        return esRepo.findByVenue_City_PinCode(pinCode);
+    }
+
 }

@@ -15,4 +15,5 @@ public interface EventScheduleRepository extends JpaRepository<EventSchedule, Ev
     List<EventSchedule> findAllByEventAndVenue(Event event, Venue venue);
     List<EventSchedule> findAllBySaleLiveAndScheduledSaleStart(boolean saleLive, String scheduledSaleStart);
     EventSchedule findByEventAndVenueAndDateAndStartTime(Event event, Venue venue, String date, String startTime);
+    List<EventSchedule> findByVenue_City_PinCode(String pinCode);
 }

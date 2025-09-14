@@ -54,27 +54,34 @@ public class LiveBookingService {
         }
     }
 
-    public String initiateBookingProcessForUser(EventSchedule schedule, String categoryId, String userEmail,
-                                                int numberOfTickets) {
-        try {
-            String bookingId = BookingIdGenerator.createBookingID(userEmail);
-            String cacheUserResponse = cache.addUserBookingToCache(schedule, categoryId, userEmail, bookingId,
-                    numberOfTickets);
-            if(cacheUserResponse == null || cacheUserResponse.equals("failure")) {
-                log.error("could not add user to cache.");
-                return null;
-            }
-            String seatResponse = cache.updateSeatCountForEventSchedule(schedule, categoryId, numberOfTickets, 5);
-            if(seatResponse == null || seatResponse.equals("failure")) {
-                log.error("could not update seats in cache.");
-                return null;
-            }
-            return cacheUserResponse;
-        } catch (Exception e) {
-            log.error("Error while initiating user booking: {}", e.getMessage());
+    public String initiateBookingProcessForUser(EventSchedule schedule, String categoryId,
+                                            String userEmail, int numberOfTickets) {
+    try {
+        String bookingId = BookingIdGenerator.createBookingID(userEmail);
+
+        String cacheUserResponse = cache.addUserBookingToCache(
+                schedule, categoryId, userEmail, bookingId, numberOfTickets
+        );
+        if (cacheUserResponse == null || cacheUserResponse.equals("failure")) {
+            log.error("could not add user to cache.");
             return null;
         }
+
+        String seatResponse = cache.updateSeatCountForEventSchedule(
+                schedule, categoryId, numberOfTickets, 5
+        );
+        if (seatResponse == null || seatResponse.equals("failure")) {
+            log.error("could not update seats in cache.");
+            return null;
+        }
+
+        return bookingId; // 🔹 return bookingId
+    } catch (Exception e) {
+        log.error("Error while initiating user booking: {}", e.getMessage());
+        return null;
     }
+}
+
 
     public Booking saveUserBooking(String userEmail, EventSchedule schedule, String categoryId, int numberOfSeats){
         String cacheResponse = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfSeats);

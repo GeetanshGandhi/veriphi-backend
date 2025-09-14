@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -85,5 +86,10 @@ public class EventService {
             log.error("Error occurred while updating event approval. Error: {}", e.getMessage());
             return null;
         }
+    }
+
+    public List<Event> getAllEvents(Boolean approved){
+        if(approved == null) return eventRepository.findAll();
+        return eventRepository.findByApproved(approved);
     }
 }

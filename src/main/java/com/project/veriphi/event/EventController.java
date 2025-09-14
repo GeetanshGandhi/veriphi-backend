@@ -1,5 +1,7 @@
 package com.project.veriphi.event;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +53,14 @@ public class EventController {
             return new ResponseEntity<>(res, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<Event>> getAllEvents(@RequestParam(required = false) Boolean approved){
+        List<Event> events = eventService.getAllEvents(approved);
+        if(events == null){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(events, HttpStatus.OK);
     }
 }

@@ -22,27 +22,39 @@ public class LiveBookingController {
     @Autowired
     EventScheduleService esSvc;
 
-    @PostMapping("/initUser")
-    public ResponseEntity<String> initiateBookingForUser(@RequestParam("eventId") long eventId,
-                                                         @RequestParam("venueId") long venueId,
-                                                         @RequestParam("date") String date,
-                                                         @RequestParam("startTime") String startTime,
-                                                         @RequestParam("categoryId") String categoryId,
-                                                         @RequestParam("userEmail") String email,
-                                                         @RequestParam("numberOfSeats") int numberSeats){
-        try{
-            EventSchedule schedule = esSvc.getById(eventId, venueId, date, startTime);
-            String response = liveBookingService.initiateBookingProcessForUser(schedule, categoryId, email,
-                    numberSeats);
-            if(response.equals("success")) {
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            log.error("Error at initiateBookingForUser endpoint: {}", e.getMessage());
-            return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+@PostMapping("/initUser")
+public ResponseEntity<?> initiateBookingForUser(@RequestParam("eventId") long eventId,
+                                                @RequestParam("venueId") long venueId,
+                                                @RequestParam("date") String date,
+                                                @RequestParam("startTime") String startTime,
+                                                @RequestParam("categoryId") String categoryId,
+                                                @RequestParam("userEmail") String email,
+                                                @RequestParam("numberOfSeats") int numberSeats) {
+    try {
+        EventSchedule schedule = esSvc.getById(eventId, venueId, date, startTime);
+        String bookingId = liveBookingService.initiateBookingProcessForUser(
+                schedule, categoryId, email, numberSeats
+        );
+
+        if (bookingId != null) {
+            return new ResponseEntity<>(
+                String.format("{\"status\":\"OK\",\"bookingId\":\"%s\"}", bookingId),
+                HttpStatus.OK
+            );
         }
+        return new ResponseEntity<>(
+            "{\"status\":\"Error\",\"message\":\"Failed to init booking\"}",
+            HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    } catch (Exception e) {
+        log.error("Error at initiateBookingForUser endpoint: {}", e.getMessage());
+        return new ResponseEntity<>(
+            "{\"status\":\"Error\",\"message\":\"Exception occurred\"}",
+            HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
+}
+
 
     @PostMapping("/confirmBooking")
     public ResponseEntity<Booking> confirmBooking(@RequestParam("eventId") long eventId,

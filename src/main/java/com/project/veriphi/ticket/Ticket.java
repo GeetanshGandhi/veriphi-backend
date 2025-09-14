@@ -22,5 +22,9 @@ public class Ticket {
     private String bookingEmail;
     private String seatCategory;
     private String seatNumber;
+    private boolean isResold;
 
+    public Ticket(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
 }

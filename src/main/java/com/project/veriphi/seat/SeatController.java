@@ -44,7 +44,7 @@ public class SeatController {
 
     @Autowired
     SeatGenerator seatGenerator;
-    @GetMapping("/genseats")
+    @GetMapping("/genseat")
     public void seatgenerate(){
         seatGenerator.generate();
     }

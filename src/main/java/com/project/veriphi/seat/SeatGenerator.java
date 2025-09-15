@@ -15,27 +15,27 @@ public class SeatGenerator {
 
     @Autowired
     TicketFaceBindService svc;
+
     public void generate() {
         List<AddSeatPayload> seats = new ArrayList<>();
 
         String[] categories = {
-                "VIP", "Premium", "Gold", "Silver", "Bronze", "Economy"
+                "Premium", "Gold", "Silver", "Bronze", "Economy"
         };
 
         String[] descriptions = {
                 "Front row luxury seating",
                 "Close to stage with premium comfort",
                 "Great view with added benefits",
-                "Mid-tier affordable seating",
                 "Budget-friendly option with decent view",
                 "Basic seating for general audience"
         };
 
         double[] prices = {
-                5000.0, 3500.0, 2500.0, 1500.0, 800.0, 400.0
+                5000.0, 3500.0, 2000.0, 1500.0, 800.0
         };
 
-        int totalSeats = 4800;
+        int totalSeats = 5000;
         int baseSeatsPerCategory = totalSeats / categories.length; // 800
 
         int seatCounter = 1;
@@ -61,8 +61,8 @@ public class SeatGenerator {
 
         try {
             String seatJson = new ObjectMapper().writeValueAsString(seats);
-            long eventId = 2;
-            long venueId = 3;
+            long eventId = 1;
+            long venueId = 1;
             svc.func(seatJson, eventId, venueId);
 
         } catch (JsonProcessingException e) {

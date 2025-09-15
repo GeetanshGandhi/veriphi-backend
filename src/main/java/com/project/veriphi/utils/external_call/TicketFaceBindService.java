@@ -40,5 +40,7 @@ public class TicketFaceBindService {
         form.add("venueId", String.valueOf(venueId));
         ResponseEntity<String> res =
                 webClient.post().uri(BINDING_SERVICE_URL).bodyValue(form).retrieve().toEntity(String.class).block();
+        if(res!= null) System.out.println(res.getStatusCode().toString());
+        else System.out.println("res is null");
     }
 }

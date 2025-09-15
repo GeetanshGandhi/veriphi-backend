@@ -44,7 +44,7 @@ public class EventController {
 
     @PostMapping("/updateApproval")
     public ResponseEntity<String> updateApproval(@RequestParam("eventId") long eventId,
-                                                 @RequestParam boolean status) {
+                                                 @RequestParam("status") boolean status) {
         String res = eventService.updateApproval(eventId, status);
         if(res == null) {
             return new ResponseEntity<>("error", HttpStatus.INTERNAL_SERVER_ERROR);

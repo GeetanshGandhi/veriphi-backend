@@ -11,6 +11,7 @@ import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +79,13 @@ public class TicketService {
                     seatIndex++;
                 }
                 ticketRepository.saveAll(tickets);
-                seatService.updateSeatAllotment(allottedSeats);
+                bookingService.updateStatus(booking, "allotted");
+
+                List<Pair<Seat, Boolean>> updatedSeats = new ArrayList<>();
+                for(Seat s : allottedSeats) {
+                    updatedSeats.add(Pair.of(s, true));
+                }
+                seatService.updateSeatAllotment(updatedSeats);
 
 //                boolean ticketBindingOutput = tfbService.callForBinding(tickets, booking.getBookingId());
 

@@ -11,6 +11,7 @@ import com.project.veriphi.venue.Venue;
 import com.project.veriphi.venue.VenueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -99,14 +100,17 @@ public class SeatService {
         }
     }
 
-    public String updateSeatAllotment(List<Seat> seats) {
+    public void updateSeatAllotment(List<Pair<Seat, Boolean>> seats) {
         try {
-            for(Seat seat: seats) seat.setAllotment(true);
-            seatRepository.saveAll(seats);
-            return "success";
+            List<Seat> updated = new ArrayList<>();
+            for(Pair<Seat, Boolean> pair: seats) {
+                Seat upd = pair.getFirst();
+                upd.setAllotment(pair.getSecond());
+            }
+            seatRepository.saveAll(updated);
+            log.info("Updated {} seat allotments successfully", seats.size());
         } catch (Exception e){
             log.error("Error occurred while updateSeatAllotment: {}", e.getMessage());
-            return "failure";
         }
     }
 }

@@ -57,6 +57,10 @@ public class LiveBookingService {
     public String initiateBookingProcessForUser(EventSchedule schedule, String categoryId,
                                             String userEmail, int numberOfTickets) {
     try {
+        int available = cache.getSeatCountForES(schedule);
+        if(available<numberOfTickets)
+            return "seats_unavailable";
+
         String bookingId = BookingIdGenerator.createBookingID(userEmail);
 
         String cacheUserResponse = cache.addUserBookingToCache(
@@ -75,7 +79,7 @@ public class LiveBookingService {
             return null;
         }
 
-        return bookingId; // 🔹 return bookingId
+        return "ok"; // 🔹 return bookingId
     } catch (Exception e) {
         log.error("Error while initiating user booking: {}", e.getMessage());
         return null;

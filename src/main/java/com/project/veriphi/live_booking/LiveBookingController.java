@@ -23,7 +23,7 @@ public class LiveBookingController {
     EventScheduleService esSvc;
 
 @PostMapping("/initUser")
-public ResponseEntity<?> initiateBookingForUser(@RequestParam("eventId") long eventId,
+public ResponseEntity<String> initiateBookingForUser(@RequestParam("eventId") long eventId,
                                                 @RequestParam("venueId") long venueId,
                                                 @RequestParam("date") String date,
                                                 @RequestParam("startTime") String startTime,
@@ -32,24 +32,29 @@ public ResponseEntity<?> initiateBookingForUser(@RequestParam("eventId") long ev
                                                 @RequestParam("numberOfSeats") int numberSeats) {
     try {
         EventSchedule schedule = esSvc.getById(eventId, venueId, date, startTime);
-        String bookingId = liveBookingService.initiateBookingProcessForUser(
+        String response = liveBookingService.initiateBookingProcessForUser(
                 schedule, categoryId, email, numberSeats
         );
-
-        if (bookingId != null) {
+        if(response.equals("seats_unavailable")) {
             return new ResponseEntity<>(
-                String.format("{\"status\":\"OK\",\"bookingId\":\"%s\"}", bookingId),
+                    response,
+                    HttpStatus.CONFLICT
+            );
+        }
+        if (response.equals("ok")) {
+            return new ResponseEntity<>(
+                response,
                 HttpStatus.OK
             );
         }
         return new ResponseEntity<>(
-            "{\"status\":\"Error\",\"message\":\"Failed to init booking\"}",
+            "error",
             HttpStatus.INTERNAL_SERVER_ERROR
         );
     } catch (Exception e) {
         log.error("Error at initiateBookingForUser endpoint: {}", e.getMessage());
         return new ResponseEntity<>(
-            "{\"status\":\"Error\",\"message\":\"Exception occurred\"}",
+            "error",
             HttpStatus.INTERNAL_SERVER_ERROR
         );
     }

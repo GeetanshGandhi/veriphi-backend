@@ -68,6 +68,17 @@ public class LiveBookingCache {
         }
     }
 
+    public int getSeatCountForES(EventSchedule es) {
+        try{
+            String key = createEventScheduleKey(es);
+            String cacheOut = redisClient.getString(key, false);
+            return Integer.parseInt(cacheOut);
+        } catch (Exception e) {
+            log.error("Error occurred while getSeatCountForES: {}", e.getMessage());
+            return -1;
+        }
+    }
+
     //cache will expire after 15 minutes automatically
     public String addUserBookingToCache(EventSchedule schedule, String seatCategoryId, String userEmail,
                                         String bookingId, int numberOfSeats) {

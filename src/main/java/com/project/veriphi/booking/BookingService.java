@@ -34,6 +34,15 @@ public class BookingService {
         }
     }
 
+    public void updateStatus(Booking booking, String status) {
+        try {
+            booking.setStatus(status);
+            bookingRepository.save(booking);
+        } catch (Exception e) {
+            log.error("Error while updating booking status: {}", e.getMessage());
+        }
+    }
+
     public List<Booking> getBookingsForUser(String userEmail){
         try{
             User user = userService.getByEmail(userEmail);

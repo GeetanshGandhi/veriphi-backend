@@ -86,6 +86,7 @@ public class RedisClient {
 
     public String incrementHash(String key, String field, long value) {
         try{
+            System.out.println("incrementing hash by: "+value);
             long output = jedis.hincrBy(key, field, value);
             return "success";
         } catch (Exception e) {

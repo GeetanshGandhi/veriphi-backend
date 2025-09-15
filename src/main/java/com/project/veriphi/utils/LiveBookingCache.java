@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class LiveBookingCache {
 
-    private static final long USER_EXPIRATION_TIME = 20;
+    private static final long USER_EXPIRATION_TIME = 15 * 60;
 
     @Autowired
     RedisClient redisClient;

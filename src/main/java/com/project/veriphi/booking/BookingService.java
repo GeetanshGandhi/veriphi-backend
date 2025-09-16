@@ -36,7 +36,7 @@ public class BookingService {
 
     public void updateStatus(Booking booking, String status) {
         try {
-            booking.setStatus(status);
+            booking.setBookingStatus(status);
             bookingRepository.save(booking);
         } catch (Exception e) {
             log.error("Error while updating booking status: {}", e.getMessage());
@@ -56,11 +56,28 @@ public class BookingService {
         }
     }
 
+    public Booking getByUserAndES(String userEmail, EventSchedule es) {
+        try {
+            return bookingRepository.findByUser_EmailAndEventSchedule(userEmail, es);
+        } catch (Exception e){
+            log.error("Error in getByUserAndES. Error: {}", e.getMessage());
+            return null;
+        }
+    }
     public List<Booking> getAllByEventScheduleAndSeatCategory(EventSchedule eventSchedule, SeatCategory seatCategory) {
         try {
             return bookingRepository.findAllByEventScheduleAndSeatCategory(eventSchedule, seatCategory);
         } catch (Exception e){
             log.error("Error in getAllByEventSchedule. Error: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Booking> getAllByStatus(String status) {
+        try {
+            return bookingRepository.findAllByBookingStatus(status);
+        } catch (Exception e){
+            log.error("Error in getAllByStatus. Error: {}", e.getMessage());
             return null;
         }
     }

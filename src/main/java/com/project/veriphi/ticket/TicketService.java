@@ -2,24 +2,24 @@ package com.project.veriphi.ticket;
 
 import com.project.veriphi.booking.Booking;
 import com.project.veriphi.booking.BookingService;
-import com.project.veriphi.event_schedule.EventSchedule;
-import com.project.veriphi.event_schedule.EventScheduleService;
 import com.project.veriphi.seat.Seat;
 import com.project.veriphi.seat.SeatService;
-import com.project.veriphi.seat_category.SeatCategory;
-import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
+@EnableAsync
 public class TicketService {
 
     @Autowired
@@ -27,71 +27,60 @@ public class TicketService {
     @Autowired
     BookingService bookingService;
     @Autowired
-    SeatCategoryService scSvc;
-    @Autowired
     SeatService seatService;
-    @Autowired
-    EventScheduleService esSvc;
     @Autowired
     TicketFaceBindService tfbService;
 
     @Async
-    public void initiateTicketingForEventSchedule(long eventId, long venueId, String date, String startTime) {
-        EventSchedule es = esSvc.getById(eventId, venueId, date, startTime);
-        createTicketsForEventSchedule(es);
+    @Scheduled(cron = "0 0 16 * * *")
+    public void initiateTicketingForEventSchedule() {
+        List<Booking> bookedBookings = bookingService.getAllByStatus("booked");
+        if(bookedBookings==null || bookedBookings.isEmpty()) return;
+        createTicketsForEventSchedule(bookedBookings);
     }
 
-    private void createTicketsForEventSchedule(EventSchedule eventSchedule) {
-        log.info("Initiating ticketing process for EventSchedule: {}", eventSchedule.toString());
-        List<SeatCategory> categories = scSvc.getByEventAndVenue(eventSchedule.getEvent(), eventSchedule.getVenue());
-        log.info("{} categories found for eventSchedule {}", categories.size(), eventSchedule);
-        categories.forEach(cat ->{
-            List<Seat> seats = seatService.getSeatsByCategory(cat.getCategoryId());
-            List<Booking> bookings = bookingService.getAllByEventScheduleAndSeatCategory(eventSchedule, cat);
-            log.info("Ticketing process beginning for {} bookings of {} category of {} schedule", bookings.size(),
-                    cat.getName(), eventSchedule);
-            if(bookings.isEmpty()) {
-                return;
-            }
-            int seatIndex = 0;
-            for(Booking booking: bookings) {
-                int ticketQty = booking.getNumberOfSeats();
-                List<Ticket> tickets = new ArrayList<>();
-                List<Seat> allottedSeats = new ArrayList<>();
-                for(int i = 1; i<=ticketQty; i++){
-                    String ticketNo = booking.getBookingId()+"-"+i;
-                    tickets.add(
-                            new Ticket(ticketNo,
-                                    booking.getBookingId(),
-                                    eventSchedule.getEvent().getEventId(),
-                                    eventSchedule.getVenue().getVenueId(),
-                                    eventSchedule.getDate(),
-                                    eventSchedule.getStartTime(),
-                                    booking.getUser().getEmail(),
-                                    booking.getSeatCategory().getName(),
-                                    seats.get(seatIndex).getSeatNumber(),
-                                    false
-                            )
+    private void createTicketsForEventSchedule(List<Booking> bookings) {
+        log.info("Initiating ticketing process {} bookings.", bookings.size());
+        AtomicInteger bookingsProcessed = new AtomicInteger();
+        bookings.forEach(booking -> {
+            int qty = booking.getNumberOfSeats();
+            List<Seat> availableSeats = seatService.getByCategoryAndAllotmentAndLimit(
+                            booking.getSeatCategory().getCategoryId(),
+                            false,
+                            qty
                     );
-                    Seat updatedSeat = seats.get(seatIndex);
-                    updatedSeat.setAllotment(true);
-                    allottedSeats.add(updatedSeat);
-                    seatIndex++;
-                }
-                ticketRepository.saveAll(tickets);
-                bookingService.updateStatus(booking, "allotted");
-
-                List<Pair<Seat, Boolean>> updatedSeats = new ArrayList<>();
-                for(Seat s : allottedSeats) {
-                    updatedSeats.add(Pair.of(s, true));
-                }
-                seatService.updateSeatAllotment(updatedSeats);
-
-//                boolean ticketBindingOutput = tfbService.callForBinding(tickets, booking.getBookingId());
-
-                log.info("Ticket processing completed for bookingId: {}", booking.getBookingId());
+            List<Ticket> createdTickets = new ArrayList<>();
+            List<String> ticketNumbers = new ArrayList<>();
+            List<Pair<Seat, Boolean>> allotmentUpdate = new ArrayList<>();
+            int seatIndex = 0;
+            for(int i = 1; i<=qty; i++) {
+                String ticketNumber = booking.getBookingId()+"-"+i;
+                Ticket ticket = new Ticket(
+                        ticketNumber,
+                        booking.getBookingId(),
+                        booking.getEventSchedule().getEvent().getEventId(),
+                        booking.getEventSchedule().getVenue().getVenueId(),
+                        booking.getEventSchedule().getDate(),
+                        booking.getEventSchedule().getStartTime(),
+                        booking.getUser().getEmail(),
+                        booking.getSeatCategory().getName(),
+                        availableSeats.get(seatIndex).getSeatNumber(),
+                        false
+                );
+                createdTickets.add(ticket);
+                ticketNumbers.add(ticketNumber);
+                allotmentUpdate.add(Pair.of(availableSeats.get(seatIndex), true));
+                seatIndex++;
             }
+            //saving changes to db
+            seatService.updateSeatAllotment(allotmentUpdate);
+            ticketRepository.saveAll(createdTickets);
+            bookingService.updateStatus(booking, "allotted");
+            //call to bind faces to ticket
+//            tfbService.callForBinding(ticketNumbers, booking.getBookingId());
+            bookingsProcessed.getAndIncrement();
         });
+        log.info("Processed {} out of {} bookings successfully", bookingsProcessed.get(), bookings.size());
     }
 
     public List<Ticket> getAllById(List<String> ticketNumber) {
@@ -99,10 +88,18 @@ public class TicketService {
             if(ticketNumber.isEmpty()) {
                 return new ArrayList<>();
             }
-            List<Ticket> found = ticketRepository.findAllById(ticketNumber);
-            return found;
+            return ticketRepository.findAllById(ticketNumber);
         } catch (Exception e) {
             log.error("error occurred while getAllById: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Ticket> getAllByBooking(String bookingId) {
+        try {
+            return ticketRepository.findAllByBookingId(bookingId);
+        } catch (Exception e) {
+            log.error("Error while getAllByBooking: {}", e.getMessage());
             return null;
         }
     }

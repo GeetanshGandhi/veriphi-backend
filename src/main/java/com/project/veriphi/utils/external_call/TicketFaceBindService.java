@@ -1,6 +1,5 @@
 package com.project.veriphi.utils.external_call;
 
-import com.project.veriphi.ticket.Ticket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -8,7 +7,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,17 +17,15 @@ public class TicketFaceBindService {
     @Autowired
     WebClient webClient;
 
-    public boolean callForBinding(List<Ticket> tickets, String bookingId) {
-        List<String> ticketIds = tickets.stream().map(Ticket::getTicketNumber).toList();
-
-        BookingTicketPayload btp = new BookingTicketPayload(bookingId, ticketIds);
+    public boolean callForBinding(List<String> tickets, String bookingId) {
+        BookingTicketPayload btp = new BookingTicketPayload(bookingId, tickets);
         ResponseEntity<String> response = webClient.post()
                 .uri(BINDING_SERVICE_URL)
                 .bodyValue(btp)
                 .retrieve()
                 .toEntity(String.class)
                 .block();
-        return response.getStatusCode().is2xxSuccessful();
+        return response != null && response.getStatusCode().is2xxSuccessful();
     }
 
     public void func(String seatJson, long eventId, long venueId) {
@@ -40,7 +36,7 @@ public class TicketFaceBindService {
         form.add("venueId", String.valueOf(venueId));
         ResponseEntity<String> res =
                 webClient.post().uri(BINDING_SERVICE_URL).bodyValue(form).retrieve().toEntity(String.class).block();
-        if(res!= null) System.out.println(res.getStatusCode().toString());
+        if(res!= null) System.out.println(res.getStatusCode());
         else System.out.println("res is null");
     }
 }

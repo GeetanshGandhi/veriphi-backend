@@ -68,10 +68,10 @@ public class LiveBookingCache {
         }
     }
 
-    public int getSeatCountForES(EventSchedule es) {
+    public int getSeatCountForES(EventSchedule es, String categoryId) {
         try{
             String key = createEventScheduleKey(es);
-            String cacheOut = redisClient.getString(key, false);
+            String cacheOut = redisClient.getHashField(key, categoryId);
             return Integer.parseInt(cacheOut);
         } catch (Exception e) {
             log.error("Error occurred while getSeatCountForES: {}", e.getMessage());

@@ -11,6 +11,8 @@ import com.project.veriphi.venue.Venue;
 import com.project.veriphi.venue.VenueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +113,16 @@ public class SeatService {
             log.info("Updated {} seat allotments successfully", seats.size());
         } catch (Exception e){
             log.error("Error occurred while updateSeatAllotment: {}", e.getMessage());
+        }
+    }
+
+    public List<Seat> getByCategoryAndAllotmentAndLimit(String categoryId, boolean allotment, int limit) {
+        try {
+            Pageable pageable = PageRequest.of(0, limit);
+            return seatRepository.findAllByCategoryIdAndAllotment(categoryId, allotment, pageable);
+        } catch (Exception e) {
+            log.error("Error while getByCategoryAndAllotmentAndLimit: {}", e.getMessage());
+            return null;
         }
     }
 }

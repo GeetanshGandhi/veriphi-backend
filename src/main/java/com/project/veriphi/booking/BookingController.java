@@ -18,7 +18,7 @@ public class BookingController {
     @Autowired
     BookingService bookingService;
 
-    @PostMapping("/getForUser")
+    @GetMapping("/getForUser")
     public ResponseEntity<List<Booking>> getBookingsForUser(@RequestBody String email) {
         try {
             List<Booking> bookings = bookingService.getBookingsForUser(email);

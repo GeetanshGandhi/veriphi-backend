@@ -15,7 +15,7 @@ public class SeatCategoryController {
     @Autowired
     SeatCategoryService scService;
 
-    @PostMapping("/getByEventAndVenue")
+    @GetMapping("/getByEventAndVenue")
     public ResponseEntity<List<SeatCategory>> getByEventAndVenue(@RequestParam("eventId") long eventId,
                                              @RequestParam("venueId") long venueId){
         List<SeatCategory> found = scService.getByEventAndVenue(eventId, venueId);

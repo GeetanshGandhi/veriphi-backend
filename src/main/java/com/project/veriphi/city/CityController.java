@@ -1,7 +1,12 @@
 package com.project.veriphi.city;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -23,13 +28,13 @@ public class CityController {
         return cityService.getAll();
     }
 
-    @PostMapping("/getByState")
+    @GetMapping("/getByState")
     public List<City> getByState(@RequestBody String state){
         return cityService.findCitiesByState(state);
     }
 
-    @PostMapping("/getByPincode")
-    public City getByPincode(@RequestBody String pinCode){
+    @GetMapping("/getByPincode")
+    public City getByPinCode(@RequestBody String pinCode){
         return cityService.getCityByPinCode(pinCode);
     }
 }

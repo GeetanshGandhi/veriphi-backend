@@ -57,9 +57,15 @@ public class LiveBookingService {
     public String initiateBookingProcessForUser(EventSchedule schedule, String categoryId,
                                             String userEmail, int numberOfTickets) {
     try {
-        int available = cache.getSeatCountForES(schedule);
-        if(available<numberOfTickets)
+        int available = cache.getSeatCountForES(schedule, categoryId);
+        if(available<numberOfTickets){
             return "seats_unavailable";
+        }
+        Booking alreadyBooked = bookingService.getByUserAndES(userEmail, schedule);
+        String isUserInCache = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfTickets);
+        if(alreadyBooked!=null || (isUserInCache!=null && !isUserInCache.equals("null"))) {
+            return "already_booked";
+        }
 
         String bookingId = BookingIdGenerator.createBookingID(userEmail);
 

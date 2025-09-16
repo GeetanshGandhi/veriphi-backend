@@ -1,7 +1,5 @@
 package com.project.veriphi.live_booking;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.veriphi.booking.Booking;
 import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.event_schedule.EventScheduleService;
@@ -22,43 +20,45 @@ public class LiveBookingController {
     @Autowired
     EventScheduleService esSvc;
 
-@PostMapping("/initUser")
-public ResponseEntity<String> initiateBookingForUser(@RequestParam("eventId") long eventId,
+    @PostMapping("/initUser")
+    public ResponseEntity<String> initiateBookingForUser(@RequestParam("eventId") long eventId,
                                                 @RequestParam("venueId") long venueId,
                                                 @RequestParam("date") String date,
                                                 @RequestParam("startTime") String startTime,
                                                 @RequestParam("categoryId") String categoryId,
                                                 @RequestParam("userEmail") String email,
                                                 @RequestParam("numberOfSeats") int numberSeats) {
-    try {
-        EventSchedule schedule = esSvc.getById(eventId, venueId, date, startTime);
-        String response = liveBookingService.initiateBookingProcessForUser(
-                schedule, categoryId, email, numberSeats
-        );
-        if(response.equals("seats_unavailable")) {
+        try {
+            EventSchedule schedule = esSvc.getById(eventId, venueId, date, startTime);
+            String response = liveBookingService.initiateBookingProcessForUser(
+                    schedule, categoryId, email, numberSeats
+            );
+            return switch (response) {
+                case "seats_unavailable" -> new ResponseEntity<>(
+                        response,
+                        HttpStatus.CONFLICT
+                );
+                case "already_booked" -> new ResponseEntity<>(
+                        response,
+                        HttpStatus.ALREADY_REPORTED
+                );
+                case "ok" -> new ResponseEntity<>(
+                        response,
+                        HttpStatus.OK
+                );
+                default -> new ResponseEntity<>(
+                        "error",
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            };
+        } catch (Exception e) {
+            log.error("Error at initiateBookingForUser endpoint: {}", e.getMessage());
             return new ResponseEntity<>(
-                    response,
-                    HttpStatus.CONFLICT
+                "error",
+                HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-        if (response.equals("ok")) {
-            return new ResponseEntity<>(
-                response,
-                HttpStatus.OK
-            );
-        }
-        return new ResponseEntity<>(
-            "error",
-            HttpStatus.INTERNAL_SERVER_ERROR
-        );
-    } catch (Exception e) {
-        log.error("Error at initiateBookingForUser endpoint: {}", e.getMessage());
-        return new ResponseEntity<>(
-            "error",
-            HttpStatus.INTERNAL_SERVER_ERROR
-        );
     }
-}
 
 
     @PostMapping("/confirmBooking")

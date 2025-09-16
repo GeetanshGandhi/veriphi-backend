@@ -25,7 +25,7 @@ public class Booking {
     private int numberOfSeats;
 
     //can be: booked, allotted, cancelled, event_completed
-    private String status;
+    private String bookingStatus;
 
     @ManyToOne
     @JoinColumn(name = "email")

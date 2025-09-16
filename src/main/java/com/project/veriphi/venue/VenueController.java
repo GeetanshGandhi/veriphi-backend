@@ -24,7 +24,7 @@ public class VenueController {
         return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<String> deleteVenue(@RequestBody int id){
         boolean isDeleted = venueService.deleteVenue(id);
         if(!isDeleted){
@@ -33,7 +33,7 @@ public class VenueController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @PostMapping("/getByCity")
+    @GetMapping("/getByCity")
     public List<Venue> getByCity(@RequestBody String pinCode){
         return venueService.getVenuesByCity(pinCode);
     }

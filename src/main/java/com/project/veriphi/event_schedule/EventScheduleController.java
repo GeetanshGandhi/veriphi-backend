@@ -28,7 +28,7 @@ public class EventScheduleController {
         return new ResponseEntity<>(saved, HttpStatus.OK);
     }
 
-    @PostMapping("/getByEvent")
+    @GetMapping("/getByEvent")
     public ResponseEntity<List<EventSchedule>> getByEvent(@RequestParam("eventId") long eventId){
         try{
             return new ResponseEntity<>(esService.getEventScheduleByEvent(eventId), HttpStatus.OK);
@@ -38,7 +38,7 @@ public class EventScheduleController {
         }
     }
 
-    @PostMapping("/getByEventAndCity")
+    @GetMapping("/getByEventAndCity")
     public ResponseEntity<List<EventSchedule>> getByCityAndEvent(@RequestParam("eventId") long eventId,
                                                                  @RequestParam("pinCode") String pinCode){
         try{
@@ -49,7 +49,7 @@ public class EventScheduleController {
         }
     }
 
-    @PostMapping("/getByEventAndVenue")
+    @GetMapping("/getByEventAndVenue")
     public ResponseEntity<List<EventSchedule>> getByEventAndVenue(@RequestParam("eventId") long eventId,
                                                                   @RequestParam("venueId") long venueId){
         try{
@@ -60,7 +60,7 @@ public class EventScheduleController {
         }
     }
 
-    @PostMapping("/getById")
+    @GetMapping("/getById")
     public ResponseEntity<EventSchedule> getById(@RequestParam("eventId") long eventId,
                                                  @RequestParam("venueId") long venueId,
                                                  @RequestParam("date") String date,
@@ -74,7 +74,7 @@ public class EventScheduleController {
         }
     }
 
-   @PostMapping("/getByCity")
+   @GetMapping("/getByCity")
     public ResponseEntity<List<EventSchedule>> getByCity(@RequestParam("pinCode") String pinCode) {
         return new ResponseEntity<>(esService.getByCity(pinCode), HttpStatus.OK);
     }

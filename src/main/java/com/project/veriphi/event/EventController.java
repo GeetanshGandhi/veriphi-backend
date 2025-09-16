@@ -24,7 +24,7 @@ public class EventController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Event> updateEvent(@RequestBody Event event){
         Event response = eventService.updateEvent(event);
         if(response==null){
@@ -33,7 +33,7 @@ public class EventController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<String> deleteEvent(@RequestParam("eventId") long eventId){
         boolean response = eventService.deleteEvent(eventId);
         if(!response){
@@ -42,7 +42,7 @@ public class EventController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @PostMapping("/updateApproval")
+    @PutMapping("/updateApproval")
     public ResponseEntity<String> updateApproval(@RequestParam("eventId") long eventId,
                                                  @RequestParam("status") boolean status) {
         String res = eventService.updateApproval(eventId, status);

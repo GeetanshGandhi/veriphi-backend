@@ -12,5 +12,7 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, String> {
 
     List<Booking> findAllByUser(User user);
+    Booking findByUser_EmailAndEventSchedule(String userEmail, EventSchedule eventSchedule);
     List<Booking> findAllByEventScheduleAndSeatCategory(EventSchedule eventSchedule, SeatCategory seatCategory);
+    List<Booking> findAllByBookingStatus(String bookingStatus);
 }

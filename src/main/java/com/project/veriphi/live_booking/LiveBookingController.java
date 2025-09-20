@@ -1,6 +1,6 @@
 package com.project.veriphi.live_booking;
 
-import com.project.veriphi.booking.Booking;
+import com.project.veriphi.booking.UserBooking;
 import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.event_schedule.EventScheduleService;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class LiveBookingController {
 
 
     @PostMapping("/confirmBooking")
-    public ResponseEntity<Booking> confirmBooking(@RequestParam("eventId") long eventId,
+    public ResponseEntity<UserBooking> confirmBooking(@RequestParam("eventId") long eventId,
                                                   @RequestParam("venueId") long venueId,
                                                   @RequestParam("date") String date,
                                                   @RequestParam("startTime") String startTime,
@@ -71,12 +71,12 @@ public class LiveBookingController {
                                                   @RequestParam("numberOfSeats") int numberSeats){
         try{
             EventSchedule schedule = esSvc.getById(eventId, venueId, date, startTime);
-            Booking response = liveBookingService.saveUserBooking(email, schedule, categoryId, numberSeats);
+            UserBooking response = liveBookingService.saveUserBooking(email, schedule, categoryId, numberSeats);
 
             if(response == null)
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 
-            if(response.getBookingId().equalsIgnoreCase("TTL_expired")) {
+            if(response.getUserBookingId().equalsIgnoreCase("-2")) {
                 return new ResponseEntity<>(null, HttpStatus.REQUEST_TIMEOUT);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);

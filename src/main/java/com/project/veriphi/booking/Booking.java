@@ -2,7 +2,6 @@ package com.project.veriphi.booking;
 
 import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.seat_category.SeatCategory;
-import com.project.veriphi.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,8 +16,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Booking {
+
     @Id
-    private String bookingId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long bookingId;
 
     private Date bookingDate;
     private boolean isGroup;
@@ -26,11 +27,6 @@ public class Booking {
 
     //can be: booked, allotted, cancelled, event_completed
     private String bookingStatus;
-
-    @ManyToOne
-    @JoinColumn(name = "email")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
 
     @ManyToOne
     @JoinColumns({
@@ -47,7 +43,17 @@ public class Booking {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private SeatCategory seatCategory;
 
-    public Booking(String bookingId) {
+    public Booking(long bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public Booking(Date bookingDate, boolean isGroup, int numberOfSeats, String bookingStatus, EventSchedule es,
+                   SeatCategory sc) {
+        this.bookingDate = bookingDate;
+        this.isGroup = isGroup;
+        this.numberOfSeats = numberOfSeats;
+        this.bookingStatus = bookingStatus;
+        this.eventSchedule = es;
+        this.seatCategory = sc;
     }
 }

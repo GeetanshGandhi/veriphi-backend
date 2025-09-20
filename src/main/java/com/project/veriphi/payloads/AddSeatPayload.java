@@ -1,4 +1,4 @@
-package com.project.veriphi.seat.payloads;
+package com.project.veriphi.payloads;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

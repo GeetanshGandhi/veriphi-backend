@@ -2,6 +2,7 @@ package com.project.veriphi.ticket;
 
 import com.project.veriphi.booking.Booking;
 import com.project.veriphi.booking.BookingService;
+import com.project.veriphi.booking.UserBooking;
 import com.project.veriphi.seat.Seat;
 import com.project.veriphi.seat.SeatService;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
@@ -34,18 +35,18 @@ public class TicketService {
     @Async
     @Scheduled(cron = "0 0 16 * * *")
     public void initiateTicketingForEventSchedule() {
-        List<Booking> bookedBookings = bookingService.getAllByStatus("booked");
+        List<UserBooking> bookedBookings = bookingService.getUserBookingsByStatus("booked");
         if(bookedBookings==null || bookedBookings.isEmpty()) return;
-        createTicketsForEventSchedule(bookedBookings);
+        createTicketsForUserBookings(bookedBookings);
     }
 
-    private void createTicketsForEventSchedule(List<Booking> bookings) {
+    private void createTicketsForUserBookings(List<UserBooking> bookings) {
         log.info("Initiating ticketing process {} bookings.", bookings.size());
         AtomicInteger bookingsProcessed = new AtomicInteger();
-        bookings.forEach(booking -> {
-            int qty = booking.getNumberOfSeats();
+        bookings.forEach(userBooking -> {
+            int qty = userBooking.getBooking().getNumberOfSeats();
             List<Seat> availableSeats = seatService.getByCategoryAndAllotmentAndLimit(
-                            booking.getSeatCategory().getCategoryId(),
+                            userBooking.getBooking().getSeatCategory().getCategoryId(),
                             false,
                             qty
                     );
@@ -54,16 +55,16 @@ public class TicketService {
             List<Pair<Seat, Boolean>> allotmentUpdate = new ArrayList<>();
             int seatIndex = 0;
             for(int i = 1; i<=qty; i++) {
-                String ticketNumber = booking.getBookingId()+"-"+i;
+                String ticketNumber = userBooking.getUserBookingId()+"-"+i;
                 Ticket ticket = new Ticket(
                         ticketNumber,
-                        booking.getBookingId(),
-                        booking.getEventSchedule().getEvent().getEventId(),
-                        booking.getEventSchedule().getVenue().getVenueId(),
-                        booking.getEventSchedule().getDate(),
-                        booking.getEventSchedule().getStartTime(),
-                        booking.getUser().getEmail(),
-                        booking.getSeatCategory().getName(),
+                        userBooking.getUserBookingId(),
+                        userBooking.getBooking().getEventSchedule().getEvent().getEventId(),
+                        userBooking.getBooking().getEventSchedule().getVenue().getVenueId(),
+                        userBooking.getBooking().getEventSchedule().getDate(),
+                        userBooking.getBooking().getEventSchedule().getStartTime(),
+                        userBooking.getUser().getEmail(),
+                        userBooking.getBooking().getSeatCategory().getName(),
                         availableSeats.get(seatIndex).getSeatNumber(),
                         false
                 );
@@ -75,9 +76,9 @@ public class TicketService {
             //saving changes to db
             seatService.updateSeatAllotment(allotmentUpdate);
             ticketRepository.saveAll(createdTickets);
-            bookingService.updateStatus(booking, "allotted");
+            bookingService.updateStatus(userBooking.getBooking(), "allotted");
             //call to bind faces to ticket
-//            tfbService.callForBinding(ticketNumbers, booking.getBookingId());
+//            tfbService.callForBinding(ticketNumbers, userBooking.getBookingId());
             bookingsProcessed.getAndIncrement();
         });
         log.info("Processed {} out of {} bookings successfully", bookingsProcessed.get(), bookings.size());
@@ -103,4 +104,5 @@ public class TicketService {
             return null;
         }
     }
+
 }

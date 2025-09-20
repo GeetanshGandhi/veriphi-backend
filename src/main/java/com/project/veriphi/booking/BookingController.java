@@ -1,5 +1,6 @@
 package com.project.veriphi.booking;
 
+import com.project.veriphi.payloads.UserBookingDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,13 +20,13 @@ public class BookingController {
     BookingService bookingService;
 
     @GetMapping("/getForUser")
-    public ResponseEntity<List<Booking>> getBookingsForUser(@RequestBody String email) {
+    public ResponseEntity<List<UserBookingDetails>> getBookingsForUser(@RequestBody String email) {
         try {
-            List<Booking> bookings = bookingService.getBookingsForUser(email);
+            List<UserBookingDetails> bookings = bookingService.getBookingsForUser(email);
             if(bookings == null) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            if(!bookings.isEmpty() && bookings.get(0).getBookingId().equalsIgnoreCase("no-user")) {
+            if(!bookings.isEmpty() && bookings.getFirst().getUserBookingId().equalsIgnoreCase("-1")) {
                 return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNPROCESSABLE_ENTITY);
             }
             return new ResponseEntity<>(bookings, HttpStatus.OK);

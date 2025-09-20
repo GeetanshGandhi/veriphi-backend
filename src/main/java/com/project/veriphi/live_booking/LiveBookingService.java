@@ -2,12 +2,13 @@ package com.project.veriphi.live_booking;
 
 import com.project.veriphi.booking.Booking;
 import com.project.veriphi.booking.BookingService;
+import com.project.veriphi.booking.UserBooking;
 import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
-import com.project.veriphi.utils.BookingIdGenerator;
+import com.project.veriphi.utils.UserBookingIdGenerator;
 import com.project.veriphi.utils.LiveBookingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +62,13 @@ public class LiveBookingService {
         if(available<numberOfTickets){
             return "seats_unavailable";
         }
-        Booking alreadyBooked = bookingService.getByUserAndES(userEmail, schedule);
+        UserBooking alreadyBooked = bookingService.getByUserAndES(userEmail, schedule);
         String isUserInCache = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfTickets);
         if(alreadyBooked!=null || (isUserInCache!=null && !isUserInCache.equals("null"))) {
             return "already_booked";
         }
 
-        String bookingId = BookingIdGenerator.createBookingID(userEmail);
+        String bookingId = UserBookingIdGenerator.createBookingID(userEmail);
 
         String cacheUserResponse = cache.addUserBookingToCache(
                 schedule, categoryId, userEmail, bookingId, numberOfTickets
@@ -93,29 +94,33 @@ public class LiveBookingService {
 }
 
 
-    public Booking saveUserBooking(String userEmail, EventSchedule schedule, String categoryId, int numberOfSeats){
+    public UserBooking saveUserBooking(String userEmail, EventSchedule schedule, String categoryId, int numberOfSeats){
         String cacheResponse = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfSeats);
         if(cacheResponse == null ){
             log.error("User TTL expired for {}.", userEmail);
-            return new Booking("TTL_expired");
+            return new UserBooking("-2");
         }
         User user = userService.getByEmail(userEmail);
         SeatCategory seatCategory = scSvc.getById(categoryId);
 
         Booking booking = new Booking(
-                cacheResponse,
                 new Date(),
                 false,
                 numberOfSeats,
                 "booked",
-                user,
                 schedule,
                 seatCategory
         );
-
         Booking addedBooking = bookingService.createBooking(booking);
+
+        UserBooking userBooking = new UserBooking(
+                cacheResponse,
+                addedBooking,
+                user
+        );
+        UserBooking addedUserBooking = bookingService.createUserBooking(userBooking);
         cache.deleteUserFromCache(schedule, categoryId, userEmail, numberOfSeats);
         log.info("Booking for user {} successfully saved!", userEmail);
-        return addedBooking;
+        return addedUserBooking;
     }
 }

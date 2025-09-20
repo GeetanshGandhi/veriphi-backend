@@ -1,10 +1,9 @@
 package com.project.veriphi.booking;
 
 import com.project.veriphi.event_schedule.EventSchedule;
-import com.project.veriphi.seat_category.SeatCategory;
+import com.project.veriphi.payloads.UserBookingDetails;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
-import com.project.veriphi.utils.BookingIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,17 +18,41 @@ public class BookingService {
     @Autowired
     BookingRepository bookingRepository;
     @Autowired
+    UserBookingRepository ubr;
+    @Autowired
+    GroupBookingRepository gbr;
+    @Autowired
     UserService userService;
 
     public Booking createBooking(Booking booking){
         try{
-            String bookingId = BookingIdGenerator.createBookingID(booking.getUser().getEmail());
-            booking.setBookingId(bookingId);
             Booking saved = bookingRepository.save(booking);
-            log.info("booking with ID {} saved successfully", bookingId);
+            log.info("booking with ID {} saved successfully", saved.getBookingId());
             return saved;
         } catch (Exception e){
             log.error("Could not save booking. Error: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public UserBooking createUserBooking(UserBooking userBooking) {
+        try{
+            UserBooking saved = ubr.save(userBooking);
+            log.info("UserBooking with ID {} saved successfully", saved.getUserBookingId());
+            return saved;
+        } catch (Exception e){
+            log.error("Could not save userBooking. Error: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public GroupBooking createGroupBooking(GroupBooking userBooking) {
+        try{
+            GroupBooking saved = gbr.save(userBooking);
+            log.info("GroupBooking with ID {} saved successfully", saved.getGroupBookingId());
+            return saved;
+        } catch (Exception e){
+            log.error("Could not save groupBooking. Error: {}", e.getMessage());
             return null;
         }
     }
@@ -43,42 +66,51 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getBookingsForUser(String userEmail){
+    public List<UserBookingDetails> getBookingsForUser(String userEmail){
         try{
             User user = userService.getByEmail(userEmail);
             if(user == null) {
-                return new ArrayList<>(List.of(new Booking("no-user")));
+                return List.of(new UserBookingDetails("-1"));
             }
-            return bookingRepository.findAllByUser(user);
+            List<UserBooking> found = ubr.findAllByUser(user);
+            List<UserBookingDetails> output = new ArrayList<>();
+            for(UserBooking ub: found) {
+                output.add(new UserBookingDetails(
+                        ub.getUserBookingId(),
+                        ub.getUser().getEmail(),
+                        ub.getBooking().getBookingDate(),
+                        ub.getBooking().getEventSchedule().getEvent().getName(),
+                        ub.getBooking().getEventSchedule().getDate(),
+                        ub.getBooking().getEventSchedule().getStartTime(),
+                        ub.getBooking().getEventSchedule().getVenue().getName(),
+                        ub.getBooking().getSeatCategory().getName(),
+                        ub.getBooking().getBookingStatus(),
+                        ub.getBooking().getNumberOfSeats()
+                ));
+            }
+            return output;
         } catch (Exception e){
             log.error("error while getBookingsForUser. Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public Booking getByUserAndES(String userEmail, EventSchedule es) {
+    public UserBooking getByUserAndES(String userEmail, EventSchedule es) {
         try {
-            return bookingRepository.findByUser_EmailAndEventSchedule(userEmail, es);
+            return ubr.findByUser_EmailAndBooking_EventSchedule(userEmail, es);
         } catch (Exception e){
             log.error("Error in getByUserAndES. Error: {}", e.getMessage());
             return null;
         }
     }
-    public List<Booking> getAllByEventScheduleAndSeatCategory(EventSchedule eventSchedule, SeatCategory seatCategory) {
+
+    public List<UserBooking> getUserBookingsByStatus(String status) {
         try {
-            return bookingRepository.findAllByEventScheduleAndSeatCategory(eventSchedule, seatCategory);
+            return ubr.findAllByBooking_BookingStatus(status);
         } catch (Exception e){
-            log.error("Error in getAllByEventSchedule. Error: {}", e.getMessage());
+            log.error("Error in getUserBookingsByStatus. Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public List<Booking> getAllByStatus(String status) {
-        try {
-            return bookingRepository.findAllByBookingStatus(status);
-        } catch (Exception e){
-            log.error("Error in getAllByStatus. Error: {}", e.getMessage());
-            return null;
-        }
-    }
 }

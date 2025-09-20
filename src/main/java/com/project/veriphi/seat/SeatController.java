@@ -3,7 +3,7 @@ package com.project.veriphi.seat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.veriphi.seat.payloads.AddSeatPayload;
+import com.project.veriphi.payloads.AddSeatPayload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -2,7 +2,7 @@ package com.project.veriphi.seat;
 
 import com.project.veriphi.event.Event;
 import com.project.veriphi.event.EventService;
-import com.project.veriphi.seat.payloads.AddSeatPayload;
+import com.project.veriphi.payloads.AddSeatPayload;
 import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.utils.SeatCategoryIdGenerator;

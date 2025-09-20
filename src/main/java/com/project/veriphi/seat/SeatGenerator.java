@@ -2,7 +2,7 @@ package com.project.veriphi.seat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.veriphi.seat.payloads.AddSeatPayload;
+import com.project.veriphi.payloads.AddSeatPayload;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,23 +20,22 @@ public class SeatGenerator {
         List<AddSeatPayload> seats = new ArrayList<>();
 
         String[] categories = {
-                "Premium", "Gold", "Silver", "Bronze", "Economy"
+                "Premium", "Gold", "Silver", "Bronze"
         };
 
         String[] descriptions = {
                 "Front row luxury seating",
                 "Close to stage with premium comfort",
                 "Great view with added benefits",
-                "Budget-friendly option with decent view",
-                "Basic seating for general audience"
+                "Budget-friendly option with decent view"
         };
 
         double[] prices = {
-                5000.0, 3500.0, 2000.0, 1500.0, 800.0
+                5000.0, 3500.0, 2000.0, 1500.0
         };
 
-        int totalSeats = 5000;
-        int baseSeatsPerCategory = totalSeats / categories.length; // 800
+        int totalSeats = 2000;
+        int baseSeatsPerCategory = totalSeats / categories.length; // 500
 
         int seatCounter = 1;
         for (int i = 0; i < categories.length; i++) {
@@ -50,19 +49,13 @@ public class SeatGenerator {
                 ));
             }
         }
-
-        // Print first 10 as sample
-        for (int i = 0; i < 10; i++) {
-            System.out.println(seats.get(i));
-        }
-
         // Print total seats generated
         System.out.println("Total seats generated: " + seats.size());
 
         try {
             String seatJson = new ObjectMapper().writeValueAsString(seats);
-            long eventId = 1;
-            long venueId = 1;
+            long eventId = 2;
+            long venueId = 3;
             svc.func(seatJson, eventId, venueId);
 
         } catch (JsonProcessingException e) {

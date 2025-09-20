@@ -66,4 +66,15 @@ public class SeatCategoryService {
             return "error";
         }
     }
+
+    public void updateSeatCategory(SeatCategory sc) {
+        try{
+            SeatCategory saved = scRepo.save(sc);
+            if(saved.getCategoryId().equals(sc.getCategoryId())){
+                log.info("updated category with id {} successfully!", saved.getCategoryId());
+            }
+        } catch (Exception e){
+            log.error("Error while updating seatCategory with id {}: {}",sc.getCategoryId(), e.getMessage());
+        }
+    }
 }

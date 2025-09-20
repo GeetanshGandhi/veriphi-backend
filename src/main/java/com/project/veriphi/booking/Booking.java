@@ -13,19 +13,18 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 public class Booking {
 
     @Id
     private String bookingId;
 
-    @NonNull private Date bookingDate;
-    @NonNull private boolean isGroup;
-    @NonNull private String bookingEmail;
-    @NonNull private int numberOfSeats;
+    private Date bookingDate;
+    private boolean isGroup;
+    private String bookingEmail;
+    private int numberOfSeats;
 
     //can be: booked, allotted, cancelled, event_completed
-    @NonNull private String bookingStatus;
+    private String bookingStatus;
 
     @ManyToOne
     @JoinColumns({
@@ -35,13 +34,11 @@ public class Booking {
             @JoinColumn(name = "startTime", referencedColumnName = "startTime")
     })
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @NonNull
     private EventSchedule eventSchedule;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @NonNull
     private SeatCategory seatCategory;
 
 }

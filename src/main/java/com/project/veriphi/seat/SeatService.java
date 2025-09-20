@@ -76,8 +76,7 @@ public class SeatService {
                         seatId,
                         seat.getSeatNumber(),
                         categoryId,
-                        false,
-                        categories.get(categoryId)
+                        false
                 );
                 seatList.add(newSeat);
             });
@@ -112,7 +111,9 @@ public class SeatService {
             for(Pair<Seat, Boolean> pair: seats) {
                 Seat upd = pair.getFirst();
                 upd.setAllotment(pair.getSecond());
+                updated.add(upd);
             }
+            for(Seat s: updated) System.out.println(s);
             seatRepository.saveAll(updated);
             log.info("Updated {} seat allotments successfully", seats.size());
         } catch (Exception e){

@@ -1,11 +1,9 @@
 package com.project.veriphi.seat;
 
-import com.project.veriphi.seat_category.SeatCategory;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -20,7 +18,4 @@ public class Seat {
 
     private String categoryId;
     private boolean allotment;
-
-    @Transient
-    private SeatCategory seatCategory;
 }

@@ -2,9 +2,7 @@ package com.project.veriphi.booking;
 
 import com.project.veriphi.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -12,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class UserBooking {
 
     @Id
@@ -21,11 +20,13 @@ public class UserBooking {
     @MapsId
     @JoinColumn(name = "bookingId")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @NonNull
     private Booking booking;
 
     @ManyToOne
     @JoinColumn(name = "email")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @NonNull
     private User user;
 
     public UserBooking(String bookingId) {

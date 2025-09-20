@@ -5,6 +5,7 @@ import com.project.veriphi.payloads.GroupBookingCreator;
 import com.project.veriphi.payloads.GroupBookingDetails;
 import com.project.veriphi.payloads.UserBookingDetails;
 import com.project.veriphi.seat_category.SeatCategory;
+import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
 import com.project.veriphi.utils.UserBookingIdGenerator;
@@ -29,6 +30,8 @@ public class BookingService {
     GroupBookingRepository gbr;
     @Autowired
     UserService userService;
+    @Autowired
+    SeatCategoryService scSvc;
 
     public Booking createBooking(Booking booking){
         try{
@@ -47,6 +50,7 @@ public class BookingService {
             log.info("UserBooking with ID {} saved successfully", saved.getBookingId());
             return saved;
         } catch (Exception e){
+            e.printStackTrace();
             log.error("Could not save userBooking. Error: {}", e.getMessage());
             return null;
         }
@@ -140,6 +144,11 @@ public class BookingService {
             );
             GroupBooking sgb = gbr.save(groupBooking);
 
+            SeatCategory categoryToUpdate = booking.getSeatCategory();
+            categoryToUpdate.setCurrentAvailability(
+                    categoryToUpdate.getCurrentAvailability() - booking.getNumberOfSeats()
+            );
+            scSvc.updateSeatCategory(categoryToUpdate);
             return new GroupBookingDetails(
                     sgb.getBooking().getBookingId(),
                     sgb.getEmail(),

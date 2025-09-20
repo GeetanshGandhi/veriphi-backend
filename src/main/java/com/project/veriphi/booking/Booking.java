@@ -3,9 +3,7 @@ package com.project.veriphi.booking;
 import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.seat_category.SeatCategory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -15,18 +13,19 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bookingId;
+    private String bookingId;
 
-    private Date bookingDate;
-    private boolean isGroup;
-    private int numberOfSeats;
+    @NonNull private Date bookingDate;
+    @NonNull private boolean isGroup;
+    @NonNull private String bookingEmail;
+    @NonNull private int numberOfSeats;
 
     //can be: booked, allotted, cancelled, event_completed
-    private String bookingStatus;
+    @NonNull private String bookingStatus;
 
     @ManyToOne
     @JoinColumns({
@@ -36,24 +35,13 @@ public class Booking {
             @JoinColumn(name = "startTime", referencedColumnName = "startTime")
     })
     @OnDelete(action = OnDeleteAction.SET_NULL)
+    @NonNull
     private EventSchedule eventSchedule;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
     @OnDelete(action = OnDeleteAction.SET_NULL)
+    @NonNull
     private SeatCategory seatCategory;
 
-    public Booking(long bookingId) {
-        this.bookingId = bookingId;
-    }
-
-    public Booking(Date bookingDate, boolean isGroup, int numberOfSeats, String bookingStatus, EventSchedule es,
-                   SeatCategory sc) {
-        this.bookingDate = bookingDate;
-        this.isGroup = isGroup;
-        this.numberOfSeats = numberOfSeats;
-        this.bookingStatus = bookingStatus;
-        this.eventSchedule = es;
-        this.seatCategory = sc;
-    }
 }

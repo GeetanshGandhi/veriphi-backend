@@ -76,7 +76,7 @@ public class LiveBookingController {
             if(response == null)
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 
-            if(response.getUserBookingId().equalsIgnoreCase("-2")) {
+            if(response.getBookingId().equalsIgnoreCase("-2")) {
                 return new ResponseEntity<>(null, HttpStatus.REQUEST_TIMEOUT);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);

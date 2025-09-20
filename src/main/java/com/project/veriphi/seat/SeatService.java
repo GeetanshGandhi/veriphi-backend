@@ -53,6 +53,9 @@ public class SeatService {
                     categories.get(categoryId).setMaxAvailability(
                             categories.get(categoryId).getMaxAvailability()+1
                     );
+                    categories.get(categoryId).setCurrentAvailability(
+                            categories.get(categoryId).getCurrentAvailability()+1
+                    );
                 }
                 else {
                     SeatCategory newCat = new SeatCategory(
@@ -60,6 +63,7 @@ public class SeatService {
                             seat.getCategoryName(),
                             seat.getCategoryDescription(),
                             seat.getPrice(),
+                            1,
                             1,
                             venue,
                             event

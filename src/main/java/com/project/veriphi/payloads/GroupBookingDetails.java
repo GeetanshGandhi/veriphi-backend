@@ -10,9 +10,9 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class UserBookingDetails {
+public class GroupBookingDetails {
     @NonNull
-    private String userBookingId;
+    private String groupBookingId;
     private String userEmail;
     private Date bookingDate;
     private String eventName;
@@ -22,4 +22,5 @@ public class UserBookingDetails {
     private String seatCategory;
     private String bookingStatus;
     private int numberOfTickets;
+
 }

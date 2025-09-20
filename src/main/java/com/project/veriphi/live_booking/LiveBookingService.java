@@ -106,6 +106,7 @@ public class LiveBookingService {
         Booking booking = new Booking(
                 new Date(),
                 false,
+                user.getEmail(),
                 numberOfSeats,
                 "booked",
                 schedule,

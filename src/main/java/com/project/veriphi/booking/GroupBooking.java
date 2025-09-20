@@ -1,17 +1,10 @@
 package com.project.veriphi.booking;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import java.time.Instant;
 
 @Entity
 @Data
@@ -20,9 +13,10 @@ import java.time.Instant;
 public class GroupBooking {
 
     @Id
-    private String groupBookingId;
+    private String bookingId;
 
-    @ManyToOne
+    @OneToOne
+    @MapsId
     @JoinColumn(name = "bookingId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Booking booking;
@@ -30,5 +24,4 @@ public class GroupBooking {
     private String entityName;
     private String email;
     private String contactNumber;
-
 }

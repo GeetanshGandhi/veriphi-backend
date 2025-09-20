@@ -24,6 +24,7 @@ public class SeatCategory {
     private String description;
     private double price;
     private int maxAvailability;
+    private int currentAvailability;
 
     @ManyToOne
     @JoinColumn(name = "venueId")

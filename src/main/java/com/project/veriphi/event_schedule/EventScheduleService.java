@@ -87,8 +87,6 @@ public class EventScheduleService {
     public EventSchedule getById(long eventId, long venueId, String date, String startTime){
         Event event = eventService.getById(eventId);
         Venue venue = venueService.getById(venueId);
-        System.out.println("event: "+event);
-        System.out.println("venue: "+venue);
         if(event == null || venue == null){
             log.error("Cannot find schedule for given eventId {} and venueId {}. Object present: {}. Returning null",
                     eventId, venueId, event==null?venue:event);

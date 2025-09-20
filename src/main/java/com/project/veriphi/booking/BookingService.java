@@ -1,15 +1,21 @@
 package com.project.veriphi.booking;
 
 import com.project.veriphi.event_schedule.EventSchedule;
+import com.project.veriphi.payloads.GroupBookingCreator;
+import com.project.veriphi.payloads.GroupBookingDetails;
 import com.project.veriphi.payloads.UserBookingDetails;
+import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
+import com.project.veriphi.utils.UserBookingIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -38,21 +44,10 @@ public class BookingService {
     public UserBooking createUserBooking(UserBooking userBooking) {
         try{
             UserBooking saved = ubr.save(userBooking);
-            log.info("UserBooking with ID {} saved successfully", saved.getUserBookingId());
+            log.info("UserBooking with ID {} saved successfully", saved.getBookingId());
             return saved;
         } catch (Exception e){
             log.error("Could not save userBooking. Error: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    public GroupBooking createGroupBooking(GroupBooking userBooking) {
-        try{
-            GroupBooking saved = gbr.save(userBooking);
-            log.info("GroupBooking with ID {} saved successfully", saved.getGroupBookingId());
-            return saved;
-        } catch (Exception e){
-            log.error("Could not save groupBooking. Error: {}", e.getMessage());
             return null;
         }
     }
@@ -76,7 +71,7 @@ public class BookingService {
             List<UserBookingDetails> output = new ArrayList<>();
             for(UserBooking ub: found) {
                 output.add(new UserBookingDetails(
-                        ub.getUserBookingId(),
+                        ub.getBookingId(),
                         ub.getUser().getEmail(),
                         ub.getBooking().getBookingDate(),
                         ub.getBooking().getEventSchedule().getEvent().getName(),
@@ -95,6 +90,15 @@ public class BookingService {
         }
     }
 
+    public Booking getById(String bookingId) {
+        try {
+            Optional<Booking> booking = bookingRepository.findById(bookingId);
+            return booking.orElse(null);
+        } catch (Exception e){
+            log.error("Error in getById. Error: {}", e.getMessage());
+            return null;
+        }
+    }
     public UserBooking getByUserAndES(String userEmail, EventSchedule es) {
         try {
             return ubr.findByUser_EmailAndBooking_EventSchedule(userEmail, es);
@@ -104,13 +108,53 @@ public class BookingService {
         }
     }
 
-    public List<UserBooking> getUserBookingsByStatus(String status) {
+    public List<Booking> getBookingsByStatus(String status) {
         try {
-            return ubr.findAllByBooking_BookingStatus(status);
+            return bookingRepository.findAllByBookingStatus(status);
         } catch (Exception e){
             log.error("Error in getUserBookingsByStatus. Error: {}", e.getMessage());
             return null;
         }
     }
 
+    public GroupBookingDetails createGroupBooking(GroupBookingCreator gbc, EventSchedule es, SeatCategory sc) {
+        try {
+            String groupBookingId = UserBookingIdGenerator.createBookingID(gbc.getEmail());
+            Booking booking = new Booking(
+                    groupBookingId,
+                    new Date(),
+                    true,
+                    gbc.getEmail(),
+                    gbc.getNumberOfTickets(),
+                    "booked",
+                    es,
+                    sc
+            );
+            Booking savedBooking = bookingRepository.save(booking);
+            GroupBooking groupBooking = new GroupBooking(
+                    groupBookingId,
+                    savedBooking,
+                    gbc.getEntityName(),
+                    gbc.getEmail(),
+                    gbc.getContactNumber()
+            );
+            GroupBooking sgb = gbr.save(groupBooking);
+
+            return new GroupBookingDetails(
+                    sgb.getBooking().getBookingId(),
+                    sgb.getEmail(),
+                    sgb.getBooking().getBookingDate(),
+                    sgb.getBooking().getEventSchedule().getEvent().getName(),
+                    sgb.getBooking().getEventSchedule().getDate(),
+                    sgb.getBooking().getEventSchedule().getStartTime(),
+                    sgb.getBooking().getEventSchedule().getVenue().getName(),
+                    sgb.getBooking().getSeatCategory().getName(),
+                    sgb.getBooking().getBookingStatus(),
+                    sgb.getBooking().getNumberOfSeats()
+            );
+        } catch (Exception e) {
+            log.error("Error occurred while createGroupBooking: {}", e.getMessage());
+            return null;
+        }
+    }
 }

@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, String> {
 
+    List<Booking> findAllByBookingStatus(String status);
+
 }

@@ -8,6 +8,7 @@ import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
+import com.project.veriphi.utils.LiveBookingCache;
 import com.project.veriphi.utils.UserBookingIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class BookingService {
     UserService userService;
     @Autowired
     SeatCategoryService scSvc;
+    @Autowired
+    LiveBookingCache lbc;
 
     public Booking createBooking(Booking booking){
         try{
@@ -169,6 +172,13 @@ public class BookingService {
                         categoryToUpdate.getCurrentAvailability() - updated.getBooking().getNumberOfSeats()
                 );
                 scSvc.updateSeatCategory(categoryToUpdate);
+                if(found.getBooking().getEventSchedule().isSaleLive())
+                    lbc.updateSeatCountForEventSchedule(
+                        found.getBooking().getEventSchedule(),
+                        categoryToUpdate.getCategoryId(),
+                        found.getBooking().getNumberOfSeats(),
+                        5
+                );
                 return GROUP_APPROVED_STATUS;
             }
             else {

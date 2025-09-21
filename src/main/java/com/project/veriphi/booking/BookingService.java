@@ -22,6 +22,10 @@ import java.util.Optional;
 @Slf4j
 public class BookingService {
 
+    private static final String GROUP_APPROVED_STATUS = "Approved";
+    private static final String GROUP_REJECTED_STATUS = "Rejected";
+    private static final String GROUP_PENDING_STATUS  = "Pending";
+
     @Autowired
     BookingRepository bookingRepository;
     @Autowired
@@ -50,7 +54,6 @@ public class BookingService {
             log.info("UserBooking with ID {} saved successfully", saved.getBookingId());
             return saved;
         } catch (Exception e){
-            e.printStackTrace();
             log.error("Could not save userBooking. Error: {}", e.getMessage());
             return null;
         }
@@ -112,16 +115,16 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getBookingsByStatus(String status) {
+    public List<Booking> getUserBookingsByStatus(String status) {
         try {
-            return bookingRepository.findAllByBookingStatus(status);
+            return bookingRepository.findAllByBookingStatusAndIsGroup(status, false);
         } catch (Exception e){
             log.error("Error in getUserBookingsByStatus. Error: {}", e.getMessage());
             return null;
         }
     }
 
-    public GroupBookingDetails createGroupBooking(GroupBookingCreator gbc, EventSchedule es, SeatCategory sc) {
+    public String createGroupBooking(GroupBookingCreator gbc, EventSchedule es, SeatCategory sc) {
         try {
             String groupBookingId = UserBookingIdGenerator.createBookingID(gbc.getEmail());
             Booking booking = new Booking(
@@ -136,34 +139,99 @@ public class BookingService {
             );
             Booking savedBooking = bookingRepository.save(booking);
             GroupBooking groupBooking = new GroupBooking(
-                    groupBookingId,
                     savedBooking,
                     gbc.getEntityName(),
                     gbc.getEmail(),
-                    gbc.getContactNumber()
+                    gbc.getContactNumber(),
+                    "Pending"
             );
             GroupBooking sgb = gbr.save(groupBooking);
-
-            SeatCategory categoryToUpdate = booking.getSeatCategory();
-            categoryToUpdate.setCurrentAvailability(
-                    categoryToUpdate.getCurrentAvailability() - booking.getNumberOfSeats()
-            );
-            scSvc.updateSeatCategory(categoryToUpdate);
-            return new GroupBookingDetails(
-                    sgb.getBooking().getBookingId(),
-                    sgb.getEmail(),
-                    sgb.getBooking().getBookingDate(),
-                    sgb.getBooking().getEventSchedule().getEvent().getName(),
-                    sgb.getBooking().getEventSchedule().getDate(),
-                    sgb.getBooking().getEventSchedule().getStartTime(),
-                    sgb.getBooking().getEventSchedule().getVenue().getName(),
-                    sgb.getBooking().getSeatCategory().getName(),
-                    sgb.getBooking().getBookingStatus(),
-                    sgb.getBooking().getNumberOfSeats()
-            );
+            if(sgb.getBookingId().equals(groupBookingId))
+                return sgb.getBookingId();
+            return null;
         } catch (Exception e) {
             log.error("Error occurred while createGroupBooking: {}", e.getMessage());
             return null;
         }
     }
+
+    public String updateGroupApproval(String bookingId, String approval) {
+        if(approval.equals(GROUP_APPROVED_STATUS) || approval.equals(GROUP_REJECTED_STATUS)) {
+            Optional<GroupBooking> groupBooking = gbr.findById(bookingId);
+            if(groupBooking.isEmpty()) return "not_found";
+            GroupBooking found = groupBooking.get();
+            found.setApprovalStatus(approval);
+            if(approval.equals(GROUP_APPROVED_STATUS)) {
+                found.setApprovalStatus(GROUP_APPROVED_STATUS);
+                GroupBooking updated = gbr.save(found);
+                SeatCategory categoryToUpdate = updated.getBooking().getSeatCategory();
+                categoryToUpdate.setCurrentAvailability(
+                        categoryToUpdate.getCurrentAvailability() - updated.getBooking().getNumberOfSeats()
+                );
+                scSvc.updateSeatCategory(categoryToUpdate);
+                return GROUP_APPROVED_STATUS;
+            }
+            else {
+                Booking booking = found.getBooking();
+                this.updateStatus(booking, "Cancelled");
+                found.setApprovalStatus(GROUP_REJECTED_STATUS);
+                gbr.save(found);
+                return GROUP_REJECTED_STATUS;
+            }
+        }
+        return "unprocessable";
+    }
+
+    public List<GroupBookingDetails> getApprovedGroupBookingsForEmail(String email) {
+        try {
+            List<GroupBooking> bookings = gbr.findAllByEmailAndApprovalStatus(email, GROUP_APPROVED_STATUS);
+            List<GroupBookingDetails> output = new ArrayList<>();
+            for (GroupBooking sgb: bookings) {
+                output.add(new GroupBookingDetails(
+                        sgb.getBooking().getBookingId(),
+                        sgb.getEmail(),
+                        sgb.getBooking().getBookingDate(),
+                        sgb.getBooking().getEventSchedule().getEvent().getName(),
+                        sgb.getBooking().getEventSchedule().getDate(),
+                        sgb.getBooking().getEventSchedule().getStartTime(),
+                        sgb.getBooking().getEventSchedule().getVenue().getName(),
+                        sgb.getBooking().getSeatCategory().getName(),
+                        sgb.getBooking().getBookingStatus(),
+                        sgb.getBooking().getNumberOfSeats()
+                ));
+            }
+            return output;
+        } catch (Exception e) {
+            log.error("Error while getApprovedGroupBookingsForEmail: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public List<GroupBookingDetails> getPendingOrRejectedGroupBookingsForEmail(String email) {
+        try {
+            List<GroupBooking> bookings = gbr.findAllByEmailAndApprovalStatus(email, GROUP_REJECTED_STATUS);
+            bookings.addAll(gbr.findAllByEmailAndApprovalStatus(email, GROUP_PENDING_STATUS));
+            List<GroupBookingDetails> output = new ArrayList<>();
+            for (GroupBooking sgb: bookings) {
+                output.add(new GroupBookingDetails(
+                        sgb.getBooking().getBookingId(),
+                        sgb.getEmail(),
+                        sgb.getBooking().getBookingDate(),
+                        sgb.getBooking().getEventSchedule().getEvent().getName(),
+                        sgb.getBooking().getEventSchedule().getDate(),
+                        sgb.getBooking().getEventSchedule().getStartTime(),
+                        sgb.getBooking().getEventSchedule().getVenue().getName(),
+                        sgb.getBooking().getSeatCategory().getName(),
+                        sgb.getBooking().getBookingStatus(),
+                        sgb.getBooking().getNumberOfSeats()
+                ));
+            }
+            return output;
+        } catch (Exception e) {
+            log.error("Error while getPendingOrRejectedGroupBookingsForEmail: {}", e.getMessage());
+            return null;
+        }
+    }
 }
+
+

@@ -58,6 +58,9 @@ public class LiveBookingService {
     public String initiateBookingProcessForUser(EventSchedule schedule, String categoryId,
                                             String userEmail, int numberOfTickets) {
     try {
+        if(!schedule.isSaleLive()) {
+            return "sale_not_live";
+        }
         int available = cache.getSeatCountForES(schedule, categoryId);
         if(available<numberOfTickets){
             return "seats_unavailable";

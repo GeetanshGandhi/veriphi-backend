@@ -54,8 +54,8 @@ public class SeatGenerator {
 
         try {
             String seatJson = new ObjectMapper().writeValueAsString(seats);
-            long eventId = 2;
-            long venueId = 3;
+            long eventId = 1;
+            long venueId = 1;
             svc.func(seatJson, eventId, venueId);
 
         } catch (JsonProcessingException e) {

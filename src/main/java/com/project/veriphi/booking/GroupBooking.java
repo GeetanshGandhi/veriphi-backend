@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class GroupBooking {
 
     @Id
@@ -19,9 +20,11 @@ public class GroupBooking {
     @MapsId
     @JoinColumn(name = "bookingId")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @NonNull
     private Booking booking;
 
-    private String entityName;
-    private String email;
-    private String contactNumber;
+    @NonNull private String email;
+    @NonNull private String entityName;
+    @NonNull private String contactNumber;
+    @NonNull private String approvalStatus;
 }

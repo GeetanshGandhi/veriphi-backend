@@ -34,6 +34,10 @@ public class LiveBookingController {
                     schedule, categoryId, email, numberSeats
             );
             return switch (response) {
+                case "sale_not_live" -> new ResponseEntity<>(
+                        response,
+                        HttpStatus.BAD_REQUEST
+                );
                 case "seats_unavailable" -> new ResponseEntity<>(
                         response,
                         HttpStatus.CONFLICT

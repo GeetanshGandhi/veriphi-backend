@@ -51,13 +51,4 @@ public class TicketController {
         }
     }
 
-    @PostMapping("/initGroup")
-    public ResponseEntity<String> iniGroup(@RequestBody String bookingId) {
-        try {
-            ticketService.initiateTicketingForGroupBooking(bookingId);
-            return new ResponseEntity<>("processing", HttpStatus.PROCESSING);
-        } catch (Exception e) {
-            return new ResponseEntity<>("error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

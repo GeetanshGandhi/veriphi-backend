@@ -32,20 +32,15 @@ public class TicketService {
     TicketFaceBindService tfbService;
 
     @Scheduled(cron = "0 0 16 * * *")
-    public void initiateTicketingForEventSchedule() {
-        List<Booking> bookedBookings = bookingService.getBookingsByStatus("booked");
+    public void initiateTicketingForBookedBookings() {
+        List<Booking> bookedBookings = bookingService.getUserBookingsByStatus("booked");
         if(bookedBookings==null || bookedBookings.isEmpty()) return;
         createTicketsForBookings(bookedBookings);
     }
 
-    public void initiateTicketingForGroupBooking(String bookingId){
-        log.info("Initialising ticketing for group booking with ID: {}", bookingId);
+    public void initiateTicketingForGroupBooking(Booking booking){
         try{
-            Booking booking = bookingService.getById(bookingId);
-            if(booking == null) {
-                log.warn("No booking found with ID: {}", bookingId);
-                return;
-            }
+            log.info("Initialising ticketing for group booking with ID: {}", booking.getBookingId());
             createTicketsForBookings(List.of(booking));
         } catch (Exception e){
             log.error("Error occurred while initiateTicketingForGroupBooking: {}", e.getMessage());

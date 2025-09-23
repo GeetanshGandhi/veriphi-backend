@@ -69,11 +69,9 @@ public class RedisClient {
     }
 
     public String createHash(String key, Map<String, String> values) {
-        System.out.println("creating hash...");
         try{
             long totalAdditions = 0;
             for(Map.Entry<String, String> e: values.entrySet()) {
-                System.out.println("entry 1");
                 long output = jedis.hset(key, e.getKey(), e.getValue());
                 totalAdditions += output;
             }
@@ -86,7 +84,6 @@ public class RedisClient {
 
     public String incrementHash(String key, String field, long value) {
         try{
-            System.out.println("incrementing hash by: "+value);
             long output = jedis.hincrBy(key, field, value);
             return "success";
         } catch (Exception e) {

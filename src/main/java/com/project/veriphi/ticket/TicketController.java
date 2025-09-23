@@ -35,7 +35,7 @@ public class TicketController {
     }
 
     @GetMapping("/getAllByBooking")
-    public ResponseEntity<List<Ticket>> getAllByBooking(@RequestBody String bookingId) {
+    public ResponseEntity<List<Ticket>> getAllByBooking(@RequestParam("bookingId") String bookingId) {
         try {
             List<Ticket> found = ticketService.getAllByBooking(bookingId);
             if(found == null ){

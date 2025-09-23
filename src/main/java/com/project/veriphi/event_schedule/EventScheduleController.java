@@ -66,7 +66,6 @@ public class EventScheduleController {
                                                  @RequestParam("date") String date,
                                                  @RequestParam("startTime") String startTime){
         try{
-            System.out.println(date);
             return new ResponseEntity<>(esService.getById(eventId, venueId, date, startTime), HttpStatus.OK);
         } catch (Exception e){
             log.error("Error occurred while executing getById. Error: {}", e.getMessage());

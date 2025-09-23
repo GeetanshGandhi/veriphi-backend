@@ -26,7 +26,6 @@ public class UserBookingIdGenerator {
             if(Character.isLetterOrDigit(user.charAt(i)))
                 generatedId.append(user.charAt(i));
         String time = Instant.now().toString();
-        System.out.println("instant: "+time);
         for(char ch: time.toCharArray()) {
             if(Character.isDigit(ch)) generatedId.append(ch);
         }
@@ -44,7 +43,6 @@ public class UserBookingIdGenerator {
                 digest.append(hex);
             }
         }
-        System.out.println("digest: "+digest);
         return digest.toString();
     }
 }

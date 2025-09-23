@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -118,11 +119,18 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getUserBookingsByStatus(String status) {
+    public List<Booking> getTicketableBookings() {
         try {
-            return bookingRepository.findAllByBookingStatusAndIsGroup(status, false);
+            List<Booking> ticketableBookings = bookingRepository.findAllByBookingStatusAndIsGroup("booked", false);
+            ticketableBookings.addAll(
+                    gbr.findAllByApprovalStatusAndBooking_BookingStatus(GROUP_APPROVED_STATUS, "booked")
+                            .stream()
+                            .map(GroupBooking::getBooking)
+                            .collect(Collectors.toSet())
+            );
+            return ticketableBookings;
         } catch (Exception e){
-            log.error("Error in getUserBookingsByStatus. Error: {}", e.getMessage());
+            log.error("Error in getTicketableBookings. Error: {}", e.getMessage());
             return null;
         }
     }

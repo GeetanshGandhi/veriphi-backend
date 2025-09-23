@@ -33,7 +33,7 @@ public class TicketService {
 
     @Scheduled(cron = "0 0 16 * * *")
     public void initiateTicketingForBookedBookings() {
-        List<Booking> bookedBookings = bookingService.getUserBookingsByStatus("booked");
+        List<Booking> bookedBookings = bookingService.getTicketableBookings();
         if(bookedBookings==null || bookedBookings.isEmpty()) return;
         createTicketsForBookings(bookedBookings);
     }

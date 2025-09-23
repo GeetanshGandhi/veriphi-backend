@@ -113,7 +113,6 @@ public class SeatService {
                 upd.setAllotment(pair.getSecond());
                 updated.add(upd);
             }
-            for(Seat s: updated) System.out.println(s);
             seatRepository.saveAll(updated);
             log.info("Updated {} seat allotments successfully", seats.size());
         } catch (Exception e){

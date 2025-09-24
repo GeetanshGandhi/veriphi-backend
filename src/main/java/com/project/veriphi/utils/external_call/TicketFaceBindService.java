@@ -1,5 +1,6 @@
 package com.project.veriphi.utils.external_call;
 
+import com.project.veriphi.payloads.BookingTicketPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

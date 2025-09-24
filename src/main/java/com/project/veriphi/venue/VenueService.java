@@ -55,7 +55,7 @@ public class VenueService {
     public List<Venue> getVenuesByCity(String pinCode){
         City city = cityService.getCityByPinCode(pinCode);
         if(city == null){
-            log.warn("No city found with pincode {}. Returning empty list", pinCode);
+            log.warn("No city found with pinCode {}. Returning empty list", pinCode);
             return new ArrayList<>();
         }
         return venueRepository.findAllByCity(city);

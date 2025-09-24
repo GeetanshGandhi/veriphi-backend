@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class EventController {
 
     @Autowired
-    private EventService eventService;
+    EventService eventService;
 
     @PostMapping("/add")
     public ResponseEntity<Event> addEvent(@RequestBody Event event){

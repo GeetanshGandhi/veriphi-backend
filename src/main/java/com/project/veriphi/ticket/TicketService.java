@@ -38,15 +38,6 @@ public class TicketService {
         createTicketsForBookings(bookedBookings);
     }
 
-    public void initiateTicketingForGroupBooking(Booking booking){
-        try{
-            log.info("Initialising ticketing for group booking with ID: {}", booking.getBookingId());
-            createTicketsForBookings(List.of(booking));
-        } catch (Exception e){
-            log.error("Error occurred while initiateTicketingForGroupBooking: {}", e.getMessage());
-        }
-    }
-
     @Async
     private void createTicketsForBookings(List<Booking> bookings) {
         log.info("Initiating ticketing process {} bookings.", bookings.size());

@@ -1,10 +1,7 @@
 package com.project.veriphi.user;
 
-import com.project.veriphi.utils.EmailValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,7 +30,6 @@ public class UserService {
             }
             return new User("unknown");
         } catch (Exception e){
-            e.printStackTrace();
             log.error("Cannot register user. Error: {}", e.getMessage());
             return null;
         }

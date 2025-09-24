@@ -1,4 +1,4 @@
-package com.project.veriphi.utils.external_call;
+package com.project.veriphi.payloads;
 
 
 import lombok.AllArgsConstructor;

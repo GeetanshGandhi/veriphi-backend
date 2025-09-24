@@ -118,24 +118,21 @@ public class LiveBookingService {
         );
         Booking addedBooking = bookingService.createBooking(booking);
 
-        if(booking!=null) {
-            UserBooking userBooking = new UserBooking(
-                    addedBooking,
-                    user
-            );
-            UserBooking addedUserBooking = bookingService.createUserBooking(userBooking);
-            if(addedUserBooking!=null) {
-                cache.deleteUserFromCache(schedule, categoryId, userEmail, numberOfSeats);
+        UserBooking userBooking = new UserBooking(
+                addedBooking,
+                user
+        );
+        UserBooking addedUserBooking = bookingService.createUserBooking(userBooking);
+        if(addedUserBooking!=null) {
+            cache.deleteUserFromCache(schedule, categoryId, userEmail, numberOfSeats);
 
-                SeatCategory categoryToUpdate = booking.getSeatCategory();
-                categoryToUpdate.setCurrentAvailability(
-                        categoryToUpdate.getCurrentAvailability() - booking.getNumberOfSeats()
-                );
-                scSvc.updateSeatCategory(categoryToUpdate);
-                log.info("Booking for user {} successfully saved!", userEmail);
-                return addedUserBooking;
-            }
-            return null;
+            SeatCategory categoryToUpdate = booking.getSeatCategory();
+            categoryToUpdate.setCurrentAvailability(
+                    categoryToUpdate.getCurrentAvailability() - booking.getNumberOfSeats()
+            );
+            scSvc.updateSeatCategory(categoryToUpdate);
+            log.info("Booking for user {} successfully saved!", userEmail);
+            return addedUserBooking;
         }
         return null;
     }

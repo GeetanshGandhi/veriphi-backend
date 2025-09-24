@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface SeatRepository extends MongoRepository<Seat, String> {
 
-    List<Seat> findAllByCategoryId(String categoryId);
     List<Seat> findAllByCategoryIdAndAllotment(String categoryId, boolean allotment, Pageable pageable);
 }

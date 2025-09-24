@@ -26,15 +26,6 @@ public class RedisClient {
     @Autowired
     private UnifiedJedis jedis;
 
-    public String setString(String key, String value){
-        try{
-            return jedis.set(key, value);
-        } catch (Exception e){
-            log.error("Error occurred while putting string to redis: {}", e.getMessage());
-            return null;
-        }
-    }
-
     public String setString(String key, String value, long expireSeconds){
         try{
             return jedis.setex(key, expireSeconds,value);
@@ -58,13 +49,11 @@ public class RedisClient {
         }
     }
 
-    public String deleteKey(String key) {
+    public void deleteKey(String key) {
         try {
-            long out = jedis.del(key);
-            return out == 1 ? "success" : "failure";
+            jedis.del(key);
         } catch (Exception e) {
             log.error("Error while deleting cache key: {}", e.getMessage());
-            return null;
         }
     }
 
@@ -84,7 +73,7 @@ public class RedisClient {
 
     public String incrementHash(String key, String field, long value) {
         try{
-            long output = jedis.hincrBy(key, field, value);
+            jedis.hincrBy(key, field, value);
             return "success";
         } catch (Exception e) {
             log.error("Error while updating hash: {}", e.getMessage());
@@ -100,12 +89,5 @@ public class RedisClient {
             return null;
         }
     }
-    public Map<String, String> getHash(String key){
-        try{
-            return jedis.hgetAll(key);
-        } catch (Exception e) {
-            log.error("Error while getting hash: {}", e.getMessage());
-            return null;
-        }
-    }
+
 }

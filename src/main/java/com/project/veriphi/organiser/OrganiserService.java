@@ -43,8 +43,7 @@ public class OrganiserService {
             if(organiserAuth == null) {
                 new Organiser("invalid");
             }
-            Organiser organiser = organiserRepository.findById(organiserAuth.getEmail()).get();
-            return organiser;
+            return organiserRepository.findById(organiserAuth.getEmail()).get();
         } catch (Exception e){
             log.error("Error occurred while login. Error: {}", e.getMessage());
             return null;

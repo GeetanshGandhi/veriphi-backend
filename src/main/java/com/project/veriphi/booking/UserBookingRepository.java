@@ -11,6 +11,5 @@ import java.util.List;
 public interface UserBookingRepository extends JpaRepository<UserBooking, String> {
 
     List<UserBooking> findAllByUser(User user);
-    List<UserBooking> findAllByBooking_BookingStatus(String status);
     UserBooking findByUser_EmailAndBooking_EventSchedule(String userEmail, EventSchedule eventSchedule);
 }

@@ -1,6 +1,5 @@
 package com.project.veriphi.event;
 
-import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.organiser.Organiser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.Objects;
 
 @Entity
 @Data

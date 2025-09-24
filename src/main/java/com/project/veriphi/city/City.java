@@ -25,8 +25,4 @@ public class City {
         City that = (City) obj;
         return this.pinCode.equals(that.pinCode);
     }
-
-    public City(String cityName) {
-        this.cityName = cityName;
-    }
 }

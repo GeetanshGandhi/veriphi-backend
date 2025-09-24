@@ -26,11 +26,13 @@ public class SeatController {
     @PostMapping("/addSeats")
     public ResponseEntity<String> addAllSeats(@RequestParam("seatDetails") String seatJson,
                                               @RequestParam("eventId") long eventId,
-                                              @RequestParam("venueId") long venueId) {
+                                              @RequestParam("venueId") long venueId,
+                                              @RequestParam("date") String date,
+                                              @RequestParam("startTime") String startTime) {
         try{
             TypeReference<List<AddSeatPayload>> typeReference = new TypeReference<>() {};
             List<AddSeatPayload> inputSeatDetails = mapper.readValue(seatJson, typeReference );
-            String response = seatService.addSeats(inputSeatDetails,eventId,venueId);
+            String response = seatService.addSeats(inputSeatDetails,eventId,venueId,date,startTime);
             if(response.equals("success")) {
                 return new ResponseEntity<>("success",HttpStatus.OK);
             }

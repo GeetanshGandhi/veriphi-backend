@@ -56,7 +56,9 @@ public class SeatGenerator {
             String seatJson = new ObjectMapper().writeValueAsString(seats);
             long eventId = 1;
             long venueId = 1;
-            svc.func(seatJson, eventId, venueId);
+            String date = "01-10-2025";
+            String startTime = "19:00";
+            svc.func(seatJson, eventId, venueId, date, startTime);
 
         } catch (JsonProcessingException e) {
             System.out.println("json error: "+e.getMessage());

@@ -1,10 +1,6 @@
 package com.project.veriphi.seat_category;
 
-import com.project.veriphi.event.Event;
-import com.project.veriphi.event.EventService;
-import com.project.veriphi.venue.Venue;
-import com.project.veriphi.venue.VenueService;
-import lombok.NonNull;
+import com.project.veriphi.event_schedule.EventSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,25 +14,14 @@ public class SeatCategoryService {
 
     @Autowired
     SeatCategoryRepository scRepo;
-    @Autowired
-    EventService eventService;
-    @Autowired
-    VenueService venueService;
 
-    public List<SeatCategory> getByEventAndVenue(long eventId, long venueId){
-        Event event = eventService.getById(eventId);
-        Venue venue = venueService.getById(venueId);
-        if(event == null || venue == null){
-            log.warn("No matching seat category found. Venue: {}, Event: {}",
-                    venue!=null?venue.toString():"null",
-                    event!=null?event.toString():"null");
-            return null;
-        }
-        return scRepo.findAllByEventAndVenue(event, venue);
-    }
-
-    public List<SeatCategory> getByEventAndVenue(@NonNull Event event, @NonNull Venue venue) {
-        return scRepo.findAllByEventAndVenue(event, venue);
+    public List<SeatCategory> getByEventSchedule(EventSchedule es) {
+        return scRepo.findAllByEventIdAndVenueIdAndDateAndStartTime(
+                es.getEvent().getEventId(),
+                es.getVenue().getVenueId(),
+                es.getDate(),
+                es.getStartTime()
+        );
     }
 
     public SeatCategory getById(String categoryId) {

@@ -28,8 +28,8 @@ public class EventScheduleService {
     @Autowired
     LiveBookingService liveBookingService;
 
-    @Scheduled(cron = "0 21 18 * * *", zone = "IST")
-    private void scheduledSaleStart(){
+    @Scheduled(cron = "0 44 11 * * *", zone = "IST")
+    public void scheduledSaleStart(){
         log.info("Initiating ticket sale for today.");
         String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         List<EventSchedule> eligibleSchedules = esRepo.findAllBySaleLiveAndScheduledSaleStart(false, currentDate);

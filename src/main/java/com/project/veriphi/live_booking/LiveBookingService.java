@@ -37,7 +37,7 @@ public class LiveBookingService {
             int completeCount = 0;
             for(EventSchedule schedule : schedules) {
                 log.info("Initiating booking process for schedule {}", schedule);
-                List<SeatCategory> categories = scSvc.getByEventAndVenue(schedule.getEvent(), schedule.getVenue());
+                List<SeatCategory> categories = scSvc.getByEventSchedule(schedule);
                 String cacheResponse = cache.initiateForEventSchedule(schedule, categories, TRIAL_COUNT);
                 if(cacheResponse == null) {
                     log.error("Error occurred in initBookingProcess for eventSchedule: {}", schedule);

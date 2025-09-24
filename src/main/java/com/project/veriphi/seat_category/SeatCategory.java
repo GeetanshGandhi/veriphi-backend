@@ -1,11 +1,9 @@
 package com.project.veriphi.seat_category;
 
 import com.project.veriphi.event.Event;
+import com.project.veriphi.event_schedule.EventSchedule;
 import com.project.veriphi.venue.Venue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,14 +23,8 @@ public class SeatCategory {
     private double price;
     private int maxAvailability;
     private int currentAvailability;
-
-    @ManyToOne
-    @JoinColumn(name = "venueId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Venue venue;
-
-    @ManyToOne
-    @JoinColumn(name = "eventId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Event event;
+    private long eventId;
+    private long venueId;
+    private String date;
+    private String startTime;
 }

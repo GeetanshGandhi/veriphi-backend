@@ -77,5 +77,11 @@ public class EventScheduleController {
     public ResponseEntity<List<EventSchedule>> getByCity(@RequestParam("pinCode") String pinCode) {
         return new ResponseEntity<>(esService.getByCity(pinCode), HttpStatus.OK);
     }
+
+    @GetMapping("/initsale")
+    public String initsale(){
+        esService.scheduledSaleStart();
+        return "Success";
+    }
     
 }

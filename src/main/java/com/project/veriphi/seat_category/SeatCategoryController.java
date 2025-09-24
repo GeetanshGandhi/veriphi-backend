@@ -1,5 +1,7 @@
 package com.project.veriphi.seat_category;
 
+import com.project.veriphi.event_schedule.EventSchedule;
+import com.project.veriphi.event_schedule.EventScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,19 @@ public class SeatCategoryController {
 
     @Autowired
     SeatCategoryService scService;
+    @Autowired
+    EventScheduleService esSvc;
 
     @GetMapping("/getByEventAndVenue")
     public ResponseEntity<List<SeatCategory>> getByEventAndVenue(@RequestParam("eventId") long eventId,
-                                             @RequestParam("venueId") long venueId){
-        List<SeatCategory> found = scService.getByEventAndVenue(eventId, venueId);
+                                             @RequestParam("venueId") long venueId,
+                                                                 @RequestParam String date,
+                                                                 @RequestParam String startTime){
+        EventSchedule es = esSvc.getById(eventId, venueId, date, startTime);
+        if(es == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        List<SeatCategory> found = scService.getByEventSchedule(es);
         if(found == null){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

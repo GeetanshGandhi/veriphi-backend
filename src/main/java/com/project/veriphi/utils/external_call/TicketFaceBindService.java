@@ -28,12 +28,14 @@ public class TicketFaceBindService {
         return response != null && response.getStatusCode().is2xxSuccessful();
     }
 
-    public void func(String seatJson, long eventId, long venueId) {
+    public void func(String seatJson, long eventId, long venueId, String date, String startTime) {
         System.out.println("calling for seat generation...");
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("seatDetails", seatJson);
         form.add("eventId", String.valueOf(eventId));
         form.add("venueId", String.valueOf(venueId));
+        form.add("date", date);
+        form.add("startTime",startTime);
         ResponseEntity<String> res =
                 webClient.post().uri(BINDING_SERVICE_URL).bodyValue(form).retrieve().toEntity(String.class).block();
         if(res!= null) System.out.println(res.getStatusCode());

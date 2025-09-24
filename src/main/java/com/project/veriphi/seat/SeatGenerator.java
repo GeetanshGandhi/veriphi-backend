@@ -1,8 +1,8 @@
 package com.project.veriphi.seat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.veriphi.payloads.AddSeatPayload;
+import com.project.veriphi.utils.AppConstants;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -53,7 +53,7 @@ public class SeatGenerator {
         System.out.println("Total seats generated: " + seats.size());
 
         try {
-            String seatJson = new ObjectMapper().writeValueAsString(seats);
+            String seatJson = AppConstants.OBJECT_MAPPER.writeValueAsString(seats);
             long eventId = 1;
             long venueId = 1;
             String date = "01-10-2025";

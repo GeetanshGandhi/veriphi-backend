@@ -5,22 +5,13 @@ import java.security.NoSuchAlgorithmException;
 
 public class SeatCategoryIdGenerator {
 
-    private static final MessageDigest md5;
-
-    static {
-        try {
-            md5 = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static String generateId(long eventId, long venueId, String name, String date, String startTime) {
         StringBuilder sb = new StringBuilder(eventId+"-"+venueId+"-"+date+"-"+startTime+"-"+name);
         return compression(sb);
     }
     private static String compression(StringBuilder id) {
-        byte[] hash = md5.digest(id.toString().getBytes());
+        byte[] hash = AppConstants.MD5.digest(id.toString().getBytes());
         StringBuilder digest = new StringBuilder();
 
         for(int i = 0; i<hash.length; i++) {

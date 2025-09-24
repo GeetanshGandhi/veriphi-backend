@@ -2,8 +2,8 @@ package com.project.veriphi.seat;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.veriphi.payloads.AddSeatPayload;
+import com.project.veriphi.utils.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,6 @@ public class SeatController {
     @Autowired
     SeatService seatService;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     @PostMapping("/addSeats")
     public ResponseEntity<String> addAllSeats(@RequestParam("seatDetails") String seatJson,
                                               @RequestParam("eventId") long eventId,
@@ -31,7 +29,7 @@ public class SeatController {
                                               @RequestParam("startTime") String startTime) {
         try{
             TypeReference<List<AddSeatPayload>> typeReference = new TypeReference<>() {};
-            List<AddSeatPayload> inputSeatDetails = mapper.readValue(seatJson, typeReference );
+            List<AddSeatPayload> inputSeatDetails = AppConstants.OBJECT_MAPPER.readValue(seatJson, typeReference );
             String response = seatService.addSeats(inputSeatDetails,eventId,venueId,date,startTime);
             if(response.equals("success")) {
                 return new ResponseEntity<>("success",HttpStatus.OK);

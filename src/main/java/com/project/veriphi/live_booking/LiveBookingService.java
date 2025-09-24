@@ -8,6 +8,7 @@ import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
+import com.project.veriphi.utils.AppConstants;
 import com.project.veriphi.utils.UserBookingIdGenerator;
 import com.project.veriphi.utils.LiveBookingCache;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,6 @@ import java.util.List;
 @Service
 @Slf4j
 public class LiveBookingService {
-
-    private static final int TRIAL_COUNT = 5;
 
     @Autowired
     LiveBookingCache cache;
@@ -38,7 +37,7 @@ public class LiveBookingService {
             for(EventSchedule schedule : schedules) {
                 log.info("Initiating booking process for schedule {}", schedule);
                 List<SeatCategory> categories = scSvc.getByEventSchedule(schedule);
-                String cacheResponse = cache.initiateForEventSchedule(schedule, categories, TRIAL_COUNT);
+                String cacheResponse = cache.initiateForEventSchedule(schedule, categories, AppConstants.TRIAL_COUNT);
                 if(cacheResponse == null) {
                     log.error("Error occurred in initBookingProcess for eventSchedule: {}", schedule);
                 } else if(cacheResponse.equals("retry_exhaustion")) {

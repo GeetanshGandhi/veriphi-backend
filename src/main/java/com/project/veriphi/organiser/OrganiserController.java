@@ -1,6 +1,6 @@
 package com.project.veriphi.organiser;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.veriphi.utils.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,13 +16,11 @@ public class OrganiserController {
     @Autowired
     OrganiserService organiserService;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     @PostMapping("/add")
     public ResponseEntity<Organiser> addOrganiser(@RequestParam("organiser") String organiserJson,
                                                   @RequestParam("password") String password){
         try{
-            Organiser parsedOrganiserObject = mapper.readValue(organiserJson, Organiser.class);
+            Organiser parsedOrganiserObject = AppConstants.OBJECT_MAPPER.readValue(organiserJson, Organiser.class);
             Organiser response = organiserService.addOrganiser(parsedOrganiserObject, password);
             if(response == null) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

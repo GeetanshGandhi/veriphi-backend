@@ -8,6 +8,7 @@ import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
+import com.project.veriphi.utils.AppConstants;
 import com.project.veriphi.utils.LiveBookingCache;
 import com.project.veriphi.utils.UserBookingIdGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +24,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class BookingService {
-
-    private static final String GROUP_APPROVED_STATUS = "Approved";
-    private static final String GROUP_REJECTED_STATUS = "Rejected";
-    private static final String GROUP_PENDING_STATUS  = "Pending";
 
     @Autowired
     BookingRepository bookingRepository;
@@ -123,7 +120,7 @@ public class BookingService {
         try {
             List<Booking> ticketableBookings = bookingRepository.findAllByBookingStatusAndIsGroup("booked", false);
             ticketableBookings.addAll(
-                    gbr.findAllByApprovalStatusAndBooking_BookingStatus(GROUP_APPROVED_STATUS, "booked")
+                    gbr.findAllByApprovalStatusAndBooking_BookingStatus(AppConstants.GROUP_APPROVED_STATUS, "booked")
                             .stream()
                             .map(GroupBooking::getBooking)
                             .collect(Collectors.toSet())
@@ -167,13 +164,13 @@ public class BookingService {
     }
 
     public String updateGroupApproval(String bookingId, String approval) {
-        if(approval.equals(GROUP_APPROVED_STATUS) || approval.equals(GROUP_REJECTED_STATUS)) {
+        if(approval.equals(AppConstants.GROUP_APPROVED_STATUS) || approval.equals(AppConstants.GROUP_REJECTED_STATUS)) {
             Optional<GroupBooking> groupBooking = gbr.findById(bookingId);
             if(groupBooking.isEmpty()) return "not_found";
             GroupBooking found = groupBooking.get();
             found.setApprovalStatus(approval);
-            if(approval.equals(GROUP_APPROVED_STATUS)) {
-                found.setApprovalStatus(GROUP_APPROVED_STATUS);
+            if(approval.equals(AppConstants.GROUP_APPROVED_STATUS)) {
+                found.setApprovalStatus(AppConstants.GROUP_APPROVED_STATUS);
                 GroupBooking updated = gbr.save(found);
                 SeatCategory categoryToUpdate = updated.getBooking().getSeatCategory();
                 categoryToUpdate.setCurrentAvailability(
@@ -187,14 +184,14 @@ public class BookingService {
                         found.getBooking().getNumberOfSeats(),
                         5
                 );
-                return GROUP_APPROVED_STATUS;
+                return AppConstants.GROUP_APPROVED_STATUS;
             }
             else {
                 Booking booking = found.getBooking();
                 this.updateStatus(booking, "Cancelled");
-                found.setApprovalStatus(GROUP_REJECTED_STATUS);
+                found.setApprovalStatus(AppConstants.GROUP_REJECTED_STATUS);
                 gbr.save(found);
-                return GROUP_REJECTED_STATUS;
+                return AppConstants.GROUP_REJECTED_STATUS;
             }
         }
         return "unprocessable";
@@ -202,7 +199,7 @@ public class BookingService {
 
     public List<GroupBookingDetails> getApprovedGroupBookingsForEmail(String email) {
         try {
-            List<GroupBooking> bookings = gbr.findAllByEmailAndApprovalStatus(email, GROUP_APPROVED_STATUS);
+            List<GroupBooking> bookings = gbr.findAllByEmailAndApprovalStatus(email, AppConstants.GROUP_APPROVED_STATUS);
             List<GroupBookingDetails> output = new ArrayList<>();
             for (GroupBooking sgb: bookings) {
                 output.add(new GroupBookingDetails(
@@ -227,8 +224,8 @@ public class BookingService {
 
     public List<GroupBookingDetails> getPendingOrRejectedGroupBookingsForEmail(String email) {
         try {
-            List<GroupBooking> bookings = gbr.findAllByEmailAndApprovalStatus(email, GROUP_REJECTED_STATUS);
-            bookings.addAll(gbr.findAllByEmailAndApprovalStatus(email, GROUP_PENDING_STATUS));
+            List<GroupBooking> bookings = gbr.findAllByEmailAndApprovalStatus(email, AppConstants.GROUP_REJECTED_STATUS);
+            bookings.addAll(gbr.findAllByEmailAndApprovalStatus(email, AppConstants.GROUP_PENDING_STATUS));
             List<GroupBookingDetails> output = new ArrayList<>();
             for (GroupBooking sgb: bookings) {
                 output.add(new GroupBookingDetails(

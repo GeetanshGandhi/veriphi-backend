@@ -15,8 +15,6 @@ import java.util.Map;
 @Slf4j
 public class LiveBookingCache {
 
-    private static final long USER_EXPIRATION_TIME = 15 * 60;
-
     @Autowired
     RedisClient redisClient;
 
@@ -84,7 +82,7 @@ public class LiveBookingCache {
                                         String bookingId, int numberOfSeats) {
         try {
             String key = createUserKey(schedule, seatCategoryId, userEmail, numberOfSeats);
-            String output = redisClient.setString(key, bookingId, USER_EXPIRATION_TIME);
+            String output = redisClient.setString(key, bookingId, AppConstants.USER_EXPIRATION_TIME);
             return output.equals("OK") ? "success" : "failure";
         } catch (Exception e) {
             log.error("error while addUserBookingToCache: {}", e.getMessage());

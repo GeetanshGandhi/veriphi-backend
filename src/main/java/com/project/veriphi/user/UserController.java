@@ -1,6 +1,6 @@
 package com.project.veriphi.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.veriphi.utils.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,13 +15,12 @@ public class UserController {
 
     @Autowired
     UserService userService;
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestParam("user") String userJson,
                                          @RequestParam("password") String password){
         try {
-            User parsedUser = mapper.readValue(userJson, User.class);
+            User parsedUser = AppConstants.OBJECT_MAPPER.readValue(userJson, User.class);
             User res = userService.register(parsedUser, password);
             if(res == null) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

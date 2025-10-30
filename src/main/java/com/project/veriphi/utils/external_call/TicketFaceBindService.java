@@ -1,6 +1,6 @@
 package com.project.veriphi.utils.external_call;
 
-import com.project.veriphi.payloads.BookingTicketPayload;
+import com.project.veriphi.payloads.TicketFaceBindPayload;
 import com.project.veriphi.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +18,10 @@ public class TicketFaceBindService {
     WebClient webClient;
 
     public boolean callForBinding(List<String> tickets, String bookingId) {
-        BookingTicketPayload btp = new BookingTicketPayload(bookingId, tickets);
+        TicketFaceBindPayload payload = new TicketFaceBindPayload(bookingId, tickets);
         ResponseEntity<String> response = webClient.post()
                 .uri(AppConstants.BINDING_SERVICE_URL)
-                .bodyValue(btp)
+                .bodyValue(payload)
                 .retrieve()
                 .toEntity(String.class)
                 .block();
@@ -37,7 +37,7 @@ public class TicketFaceBindService {
         form.add("date", date);
         form.add("startTime",startTime);
         ResponseEntity<String> res =
-                webClient.post().uri(AppConstants.BINDING_SERVICE_URL).bodyValue(form).retrieve().toEntity(String.class).block();
+                webClient.post().uri("http://localhost:8080/seat/add").bodyValue(form).retrieve().toEntity(String.class).block();
         if(res!= null) System.out.println(res.getStatusCode());
         else System.out.println("res is null");
     }

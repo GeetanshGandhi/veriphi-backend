@@ -24,7 +24,7 @@ public class AppConstants {
     public static final String GROUP_APPROVED_STATUS = "Approved";
     public static final String GROUP_REJECTED_STATUS = "Rejected";
     public static final String GROUP_PENDING_STATUS = "Pending";
-    public static final String BINDING_SERVICE_URL = "http://localhost:8080/seat/addSeats";
+    public static final String BINDING_SERVICE_URL = "https://veriphi-image-scanning.onrender.com/qr_generation";
 
 
     public static int USER_EXPIRATION_TIME = 15 * 60;

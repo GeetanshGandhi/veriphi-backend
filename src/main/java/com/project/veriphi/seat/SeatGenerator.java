@@ -56,7 +56,7 @@ public class SeatGenerator {
             String seatJson = AppConstants.OBJECT_MAPPER.writeValueAsString(seats);
             long eventId = 1;
             long venueId = 1;
-            String date = "01-10-2025";
+            String date = "01-01-2026";
             String startTime = "19:00";
             svc.func(seatJson, eventId, venueId, date, startTime);
 

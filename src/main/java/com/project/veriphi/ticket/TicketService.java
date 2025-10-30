@@ -31,7 +31,7 @@ public class TicketService {
     @Autowired
     TicketFaceBindService tfbService;
 
-    @Scheduled(cron = "0 0 16 * * *")
+    @Scheduled(cron = "0 59 23 * * *")
     public void initiateTicketingForBookedBookings() {
         List<Booking> bookedBookings = bookingService.getTicketableBookings();
         if(bookedBookings==null || bookedBookings.isEmpty()) return;
@@ -40,7 +40,7 @@ public class TicketService {
 
     @Async
     private void createTicketsForBookings(List<Booking> bookings) {
-        log.info("Initiating ticketing process {} bookings.", bookings.size());
+        log.info("Initiating ticketing process for {} bookings.", bookings.size());
         AtomicInteger bookingsProcessed = new AtomicInteger();
         bookings.forEach(booking -> {
             int qty = booking.getNumberOfSeats();
@@ -77,8 +77,8 @@ public class TicketService {
             ticketRepository.saveAll(createdTickets);
             bookingService.updateStatus(booking, "allotted");
             //call to bind faces to ticket for user bookings
-//            if(!booking.isGroup())
-//              tfbService.callForBinding(ticketNumbers, userBooking.getBookingId());
+            if(!booking.isGroup())
+              tfbService.callForBinding(ticketNumbers, booking.getBookingId());
             bookingsProcessed.getAndIncrement();
         });
         log.info("Processed {} out of {} bookings successfully", bookingsProcessed.get(), bookings.size());

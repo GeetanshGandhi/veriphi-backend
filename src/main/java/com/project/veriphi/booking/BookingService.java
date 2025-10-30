@@ -148,8 +148,8 @@ public class BookingService {
             Booking savedBooking = bookingRepository.save(booking);
             GroupBooking groupBooking = new GroupBooking(
                     savedBooking,
-                    gbc.getEntityName(),
                     gbc.getEmail(),
+                    gbc.getEntityName(),
                     gbc.getContactNumber(),
                     "Pending"
             );

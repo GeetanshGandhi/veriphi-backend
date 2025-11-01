@@ -37,7 +37,7 @@ public class TicketFaceBindService {
         form.add("date", date);
         form.add("startTime",startTime);
         ResponseEntity<String> res =
-                webClient.post().uri("http://localhost:8080/seat/add").bodyValue(form).retrieve().toEntity(String.class).block();
+                webClient.post().uri("http://localhost:8080/seat/addSeats").bodyValue(form).retrieve().toEntity(String.class).block();
         if(res!= null) System.out.println(res.getStatusCode());
         else System.out.println("res is null");
     }

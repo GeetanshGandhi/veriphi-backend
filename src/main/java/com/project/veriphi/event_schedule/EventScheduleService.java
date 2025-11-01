@@ -28,7 +28,7 @@ public class EventScheduleService {
     @Autowired
     LiveBookingService liveBookingService;
 
-    @Scheduled(cron = "0 36 22 * * *", zone = "IST")
+    @Scheduled(cron = "0 24 14 * * *", zone = "IST")
     public void scheduledSaleStart(){
         log.info("Initiating ticket sale for today.");
         String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());

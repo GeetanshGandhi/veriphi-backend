@@ -46,13 +46,13 @@ public class LiveBookingController {
                         response,
                         HttpStatus.ALREADY_REPORTED
                 );
-                case "ok" -> new ResponseEntity<>(
-                        response,
-                        HttpStatus.OK
+                case null -> new ResponseEntity<>(
+                        null,
+                        HttpStatus.INTERNAL_SERVER_ERROR
                 );
                 default -> new ResponseEntity<>(
-                        "error",
-                        HttpStatus.INTERNAL_SERVER_ERROR
+                        response,
+                        HttpStatus.OK
                 );
             };
         } catch (Exception e) {

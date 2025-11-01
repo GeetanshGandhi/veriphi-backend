@@ -88,7 +88,7 @@ public class LiveBookingService {
             return null;
         }
 
-        return "ok"; // 🔹 return bookingId
+        return bookingId; // 🔹 return bookingId
     } catch (Exception e) {
         log.error("Error while initiating user booking: {}", e.getMessage());
         return null;

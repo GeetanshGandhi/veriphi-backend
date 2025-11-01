@@ -16,7 +16,7 @@ public class SeatGenerator {
     @Autowired
     TicketFaceBindService svc;
 
-    public void generate() {
+    public void generate(String date) {
         List<AddSeatPayload> seats = new ArrayList<>();
 
         String[] categories = {
@@ -34,7 +34,7 @@ public class SeatGenerator {
                 5000.0, 3500.0, 2000.0, 1500.0
         };
 
-        int totalSeats = 2000;
+        int totalSeats = 1000;
         int baseSeatsPerCategory = totalSeats / categories.length; // 500
 
         int seatCounter = 1;
@@ -56,7 +56,6 @@ public class SeatGenerator {
             String seatJson = AppConstants.OBJECT_MAPPER.writeValueAsString(seats);
             long eventId = 1;
             long venueId = 1;
-            String date = "01-01-2026";
             String startTime = "19:00";
             svc.func(seatJson, eventId, venueId, date, startTime);
 

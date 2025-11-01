@@ -45,7 +45,9 @@ public class SeatController {
     @Autowired
     SeatGenerator seatGenerator;
     @GetMapping("/genseat")
-    public void seatgenerate(){
-        seatGenerator.generate();
+    public void seatgenerate(
+            @RequestBody String date
+    ){
+        seatGenerator.generate(date);
     }
 }

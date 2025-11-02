@@ -2,8 +2,15 @@ package com.project.veriphi.ticket;
 
 import com.project.veriphi.booking.Booking;
 import com.project.veriphi.booking.BookingService;
+import com.project.veriphi.event_schedule.EventSchedule;
+import com.project.veriphi.event_schedule.EventScheduleService;
 import com.project.veriphi.seat.Seat;
 import com.project.veriphi.seat.SeatService;
+import com.project.veriphi.seat_category.SeatCategory;
+import com.project.veriphi.seat_category.SeatCategoryService;
+import com.project.veriphi.utils.AppConstants;
+import com.project.veriphi.utils.LiveBookingCache;
+import com.project.veriphi.utils.SeatIdGenerator;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -25,9 +33,17 @@ public class TicketService {
     @Autowired
     TicketRepository ticketRepository;
     @Autowired
+    ResoldTicketRepository rtRepo;
+    @Autowired
     BookingService bookingService;
     @Autowired
     SeatService seatService;
+    @Autowired
+    SeatCategoryService scSvc;
+    @Autowired
+    EventScheduleService esSvc;
+    @Autowired
+    LiveBookingCache lbc;
     @Autowired
     TicketFaceBindService tfbService;
 
@@ -101,6 +117,25 @@ public class TicketService {
             return ticketRepository.findAllByBookingId(bookingId);
         } catch (Exception e) {
             log.error("Error while getAllByBooking: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public String resaleTicket(String ticketNumber) {
+        try{
+            Optional<Ticket> found = ticketRepository.findById(ticketNumber);
+            if(found.isEmpty()) {
+                return "no_ticket";
+            }
+            Ticket ticket = found.get();
+            ticket.setResold(true);
+            ticketRepository.save(ticket);
+            rtRepo.save(
+              new ResoldTicket(ticket.getTicketNumber(), AppConstants.TICKET_FOR_SALE)
+            );
+            return "ok";
+        } catch (Exception e) {
+            log.error("Error while resaleTicket: {}", e.getMessage());
             return null;
         }
     }

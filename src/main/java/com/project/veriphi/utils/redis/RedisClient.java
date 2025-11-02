@@ -80,6 +80,15 @@ public class RedisClient {
             return null;
         }
     }
+
+    public Map<String, String> getHash(String key) {
+        try{
+            return jedis.hgetAll(key);
+        } catch (Exception e) {
+            log.error("Error while getHash: {}", e.getMessage());
+            return null;
+        }
+    }
     public String getHashField(String key, String field) {
         try{
             String output = jedis.hget(key, field);

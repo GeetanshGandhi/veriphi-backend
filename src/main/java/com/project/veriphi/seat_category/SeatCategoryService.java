@@ -62,4 +62,13 @@ public class SeatCategoryService {
             log.error("Error while updating seatCategory with id {}: {}",sc.getCategoryId(), e.getMessage());
         }
     }
+
+    public SeatCategory getByESAndName(long eventId, long venueId, String date, String startTime, String name) {
+        try {
+            return scRepo.findByEventIdAndVenueIdAndDateAndStartTimeAndName(eventId, venueId, date, startTime, name);
+        } catch (Exception e) {
+            log.error("Error while geyByESAndName: {}", e.getMessage());
+            return null;
+        }
+    }
 }

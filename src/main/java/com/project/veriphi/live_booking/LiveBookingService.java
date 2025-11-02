@@ -54,47 +54,55 @@ public class LiveBookingService {
         }
     }
 
+    public Boolean checkSeatAvailabilityForES(EventSchedule es){
+        try{
+            return cache.checkAvailabilityForES(es);
+        } catch (Exception e){
+            log.error("Error while checkSeatAvailabilityForES: {}", e.getMessage());
+            return null;
+        }
+    }
+
     public String initiateBookingProcessForUser(EventSchedule schedule, String categoryId,
                                             String userEmail, int numberOfTickets) {
-    try {
-        if(!schedule.isSaleLive()) {
-            return "sale_not_live";
-        }
-        int available = cache.getSeatCountForES(schedule, categoryId);
-        if(available<numberOfTickets){
-            return "seats_unavailable";
-        }
-        UserBooking alreadyBooked = bookingService.getByUserAndES(userEmail, schedule);
-        String isUserInCache = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfTickets);
-        if(alreadyBooked!=null || (isUserInCache!=null && !isUserInCache.equals("null"))) {
-            return "already_booked";
-        }
+        try {
+            if(!schedule.isSaleLive()) {
+                return "sale_not_live";
+            }
+            int available = cache.getSeatCountForES(schedule, categoryId);
+            if(available<numberOfTickets){
+                return "seats_unavailable";
+            }
+            UserBooking alreadyBooked = bookingService.getByUserAndES(userEmail, schedule);
+            String isUserInCache = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfTickets);
+            if(alreadyBooked!=null || (isUserInCache!=null && !isUserInCache.equals("null"))) {
+                return "already_booked";
+            }
 
-        String bookingId = UserBookingIdGenerator.createBookingID(userEmail);
+            String bookingId = UserBookingIdGenerator.createBookingID(userEmail);
 
-        String cacheUserResponse = cache.addUserBookingToCache(
-                schedule, categoryId, userEmail, bookingId, numberOfTickets
-        );
-        if (cacheUserResponse == null || cacheUserResponse.equals("failure")) {
-            log.error("could not add user to cache.");
+            String cacheUserResponse = cache.addUserBookingToCache(
+                    schedule, categoryId, userEmail, bookingId, numberOfTickets
+            );
+            if (cacheUserResponse == null || cacheUserResponse.equals("failure")) {
+                log.error("could not add user to cache.");
+                return null;
+            }
+
+            String seatResponse = cache.updateSeatCountForEventSchedule(
+                    schedule, categoryId, numberOfTickets, 5
+            );
+            if (seatResponse == null || seatResponse.equals("failure")) {
+                log.error("could not update seats in cache.");
+                return null;
+            }
+
+            return bookingId; // 🔹 return bookingId
+        } catch (Exception e) {
+            log.error("Error while initiating user booking: {}", e.getMessage());
             return null;
         }
-
-        String seatResponse = cache.updateSeatCountForEventSchedule(
-                schedule, categoryId, numberOfTickets, 5
-        );
-        if (seatResponse == null || seatResponse.equals("failure")) {
-            log.error("could not update seats in cache.");
-            return null;
-        }
-
-        return bookingId; // 🔹 return bookingId
-    } catch (Exception e) {
-        log.error("Error while initiating user booking: {}", e.getMessage());
-        return null;
     }
-}
-
 
     public UserBooking saveUserBooking(String userEmail, EventSchedule schedule, String categoryId, int numberOfSeats){
         String cacheResponse = cache.isUserPresentInCache(schedule, categoryId, userEmail, numberOfSeats);

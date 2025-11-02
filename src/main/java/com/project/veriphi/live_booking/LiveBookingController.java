@@ -89,4 +89,22 @@ public class LiveBookingController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/checkAvailability")
+    public ResponseEntity<Boolean> checkAvailability(@RequestParam("eventId") long eventId,
+                                                     @RequestParam("venueId") long venueId,
+                                                     @RequestParam("date") String date,
+                                                     @RequestParam("startTime") String startTime) {
+        try{
+            EventSchedule es = esSvc.getById(eventId, venueId, date, startTime);
+            Boolean out = liveBookingService.checkSeatAvailabilityForES(es);
+            if(out == null) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(out, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error occurred while checkAvailability endpoint: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

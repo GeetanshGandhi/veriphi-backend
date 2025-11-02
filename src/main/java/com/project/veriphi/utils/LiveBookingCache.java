@@ -77,6 +77,21 @@ public class LiveBookingCache {
         }
     }
 
+    public Boolean checkAvailabilityForES(EventSchedule es) {
+        try{
+            String key = createEventScheduleKey(es);
+            Map<String, String> out = redisClient.getHash(key);
+            if(out == null) return null;
+            for(String s: out.values()) {
+                if(Integer.parseInt(s)>0) return false;
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("Error while checkAvailabilityForES: {}", e.getMessage());
+            return null;
+        }
+    }
+
     //cache will expire after 15 minutes automatically
     public String addUserBookingToCache(EventSchedule schedule, String seatCategoryId, String userEmail,
                                         String bookingId, int numberOfSeats) {

@@ -26,7 +26,10 @@ public class AppConstants {
     public static final String GROUP_PENDING_STATUS = "Pending";
     public static final String BINDING_SERVICE_URL = "https://veriphi-image-scanning.onrender.com/qr_generation";
 
-
     public static int USER_EXPIRATION_TIME = 15 * 60;
     public static int TRIAL_COUNT = 5;
+
+    public static String TICKET_FOR_SALE = "ForSale";
+    public static String TICKET_RESOLD = "Resold";
+    public static String TICKET_REFUNDED = "Refunded";
 }

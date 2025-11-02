@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -112,6 +113,16 @@ public class SeatService {
             return seatRepository.findAllByCategoryIdAndAllotment(categoryId, allotment, pageable);
         } catch (Exception e) {
             log.error("Error while getByCategoryAndAllotmentAndLimit: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public Seat getById(String id) {
+        try{
+            Optional<Seat> found = seatRepository.findById(id);
+            return found.orElse(null);
+        } catch (Exception e) {
+            log.error("Error while getById: {}", e.getMessage());
             return null;
         }
     }

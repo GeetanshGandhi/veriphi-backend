@@ -51,4 +51,18 @@ public class TicketController {
         }
     }
 
+    @PostMapping("/resale")
+    public ResponseEntity<String> resaleTicket(@RequestBody String ticketNUmber) {
+        try{
+            String res = ticketService.resaleTicket(ticketNUmber);
+            if(res == null) return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            if(res.equals("no_ticket"))
+                return new ResponseEntity<>(res, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error at endpoint resaleTicket: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

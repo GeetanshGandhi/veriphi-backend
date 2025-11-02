@@ -204,6 +204,7 @@ public class BookingService {
             for (GroupBooking sgb: bookings) {
                 output.add(new GroupBookingDetails(
                         sgb.getBooking().getBookingId(),
+                        sgb.getEntityName(),
                         sgb.getEmail(),
                         sgb.getBooking().getBookingDate(),
                         sgb.getBooking().getEventSchedule().getEvent().getName(),
@@ -230,6 +231,7 @@ public class BookingService {
             for (GroupBooking sgb: bookings) {
                 output.add(new GroupBookingDetails(
                         sgb.getBooking().getBookingId(),
+                        sgb.getEntityName(),
                         sgb.getEmail(),
                         sgb.getBooking().getBookingDate(),
                         sgb.getBooking().getEventSchedule().getEvent().getName(),
@@ -244,6 +246,28 @@ public class BookingService {
             return output;
         } catch (Exception e) {
             log.error("Error while getPendingOrRejectedGroupBookingsForEmail: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public List<GroupBookingDetails> getAllPending() {
+        try{
+            List<GroupBooking> groupBookings = gbr.findAllByApprovalStatus(AppConstants.GROUP_PENDING_STATUS);
+            return groupBookings.stream().map(booking -> new GroupBookingDetails(
+                    booking.getBookingId(),
+                    booking.getEntityName(),
+                    booking.getEmail(),
+                    booking.getBooking().getBookingDate(),
+                    booking.getBooking().getEventSchedule().getEvent().getName(),
+                    booking.getBooking().getEventSchedule().getDate(),
+                    booking.getBooking().getEventSchedule().getStartTime(),
+                    booking.getBooking().getEventSchedule().getVenue().getName(),
+                    booking.getBooking().getSeatCategory().getName(),
+                    booking.getBooking().getBookingStatus(),
+                    booking.getBooking().getNumberOfSeats()
+            )).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error while getAllPending: {}", e.getMessage());
             return null;
         }
     }

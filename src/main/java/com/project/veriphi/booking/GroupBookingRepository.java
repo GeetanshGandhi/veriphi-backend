@@ -8,6 +8,7 @@ import java.util.List;
 @Repository
 public interface GroupBookingRepository extends JpaRepository<GroupBooking, String> {
 
+    List<GroupBooking> findAllByApprovalStatus(String approvalStatus);
     List<GroupBooking> findAllByEmailAndApprovalStatus(String email, String status);
     List<GroupBooking> findAllByApprovalStatusAndBooking_BookingStatus(String approvalStatus, String bookingStatus);
 }

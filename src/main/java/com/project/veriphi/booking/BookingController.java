@@ -110,4 +110,18 @@ public class BookingController {
         }
     }
 
+    @GetMapping("/getAllGroupPending")
+    public ResponseEntity<List<GroupBookingDetails>> getAllPending(){
+        try{
+            List<GroupBookingDetails> output = bookingService.getAllPending();
+            if(output == null) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return new ResponseEntity<>(output, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("error at endpoint getAllPending: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

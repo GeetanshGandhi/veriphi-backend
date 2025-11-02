@@ -13,6 +13,7 @@ import java.util.Date;
 public class GroupBookingDetails {
     @NonNull
     private String groupBookingId;
+    private String entityName;
     private String userEmail;
     private Date bookingDate;
     private String eventName;

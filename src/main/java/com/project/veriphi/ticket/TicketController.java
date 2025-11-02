@@ -1,5 +1,6 @@
 package com.project.veriphi.ticket;
 
+import com.project.veriphi.payloads.ResoldTicketPayload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,34 @@ public class TicketController {
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error at endpoint resaleTicket: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/getResoldByES")
+    public ResponseEntity<List<ResoldTicketPayload>> getResoldByES(@RequestParam long eventId,
+                                                                   @RequestParam long venueId,
+                                                                   @RequestParam String date,
+                                                                   @RequestParam String startTime) {
+        try {
+            List<ResoldTicketPayload> output = ticketService.getResaleTicketsForES(eventId, venueId, date, startTime);
+            if(output == null || output.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(output, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error at getResoldByES endpoint: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/buyResoldTickets")
+    public ResponseEntity<String> buyResoldTickets(@RequestBody List<String> ticketNumbers) {
+        try{
+            String res = ticketService.buyResoldTickets(ticketNumbers);
+            if(res == null) return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            if(res.equals("not_all")) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error at buyResoldTicket endpoint: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

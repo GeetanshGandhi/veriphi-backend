@@ -8,5 +8,7 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends MongoRepository<Ticket, String> {
 
+    List<Ticket> findAllByEventIdAndVenueIdAndDateAndStartTimeAndIsResold(long eventId, long venueId, String date,
+                                                                          String startTime, boolean isResold);
     List<Ticket> findAllByBookingId(String bookingId);
 }

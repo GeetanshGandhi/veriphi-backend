@@ -9,6 +9,7 @@ import com.project.veriphi.seat.SeatService;
 import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.utils.AppConstants;
+import com.project.veriphi.utils.UserBookingIdGenerator;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ public class TicketService {
 
     @Scheduled(cron = "0 40 16 * * *")
     public void initiateTicketingForBookedBookings() {
+        System.out.println("init ticketing");
         List<Booking> bookedBookings = bookingService.getTicketableBookings();
         if(bookedBookings==null || bookedBookings.isEmpty()) return;
         createTicketsForBookings(bookedBookings);
@@ -162,6 +164,10 @@ public class TicketService {
     public String buyResoldTickets(List<String> ticketNumbers) {
         try{
             List<Ticket> tickets = ticketRepository.findAllById(ticketNumbers);
+//            Booking newBooking = new Booking(
+//                    UserBookingIdGenerator.createBookingID(),
+//                    new Date(),
+//            )
             if(tickets.size()!=ticketNumbers.size()) return "not_all";
             for (Ticket ticket : tickets) {
                 ticket.setResold(false);

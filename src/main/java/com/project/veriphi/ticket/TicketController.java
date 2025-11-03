@@ -106,4 +106,9 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/maketicket")
+    public void func(){
+        ticketService.initiateTicketingForBookedBookings();
+    }
+
 }

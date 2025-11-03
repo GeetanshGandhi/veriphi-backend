@@ -9,6 +9,7 @@ import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
 import com.project.veriphi.utils.AppConstants;
+import com.project.veriphi.utils.EmailService;
 import com.project.veriphi.utils.UserBookingIdGenerator;
 import com.project.veriphi.utils.LiveBookingCache;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ public class LiveBookingService {
     BookingService bookingService;
     @Autowired
     UserService userService;
+    @Autowired
+    EmailService emailService;
 
     public String initiateBookingProcess(List<EventSchedule> schedules) {
         try {
@@ -139,6 +142,14 @@ public class LiveBookingService {
             );
             scSvc.updateSeatCategory(categoryToUpdate);
             log.info("Booking for user {} successfully saved!", userEmail);
+            emailService.confirmBookingMail(
+                    schedule.getEvent().getName(),
+                    schedule.getVenue().getName(),
+                    schedule.getDate(),
+                    userEmail,
+                    user.getFirstName(),
+                    addedBooking.getBookingId()
+            );
             return addedUserBooking;
         }
         return null;

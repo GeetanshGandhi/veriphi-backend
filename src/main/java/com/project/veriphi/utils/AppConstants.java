@@ -32,4 +32,15 @@ public class AppConstants {
     public static String TICKET_FOR_SALE = "ForSale";
     public static String TICKET_RESOLD = "Resold";
     public static String TICKET_REFUNDED = "Refunded";
+
+    public static final String MAIL_BOOKING_SUBJECT = "Booking Confirmation";
+    public static final String MAIL_TICKET_SUBJECT = "Tickets Available";
+
+    public static final String MAIL_BOOKING_BODY = "Dear %s,\nYour booking is confirmed with the following " +
+            "details:\n\nEvent Name: %s\nVenue: %s\nDate: %s\nBooking ID: %s\n\nKindly visit our App to track " +
+            "the booking status.\n\nThank you for choosing us" +
+            ".\n\nRegards,\nTeam Veriphi";
+
+    public static final String MAIL_TICKET_BODY = "Dear %s,\nTickets are available for your booking with Booking ID " +
+            "%s.\nPlease visit our app to view.\n\nRegards,\nTeam Veriphi";
 }

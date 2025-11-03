@@ -42,7 +42,7 @@ public class TicketService {
     @Autowired
     TicketFaceBindService tfbService;
 
-    @Scheduled(cron = "0 29 14 * * *")
+    @Scheduled(cron = "0 40 16 * * *")
     public void initiateTicketingForBookedBookings() {
         List<Booking> bookedBookings = bookingService.getTicketableBookings();
         if(bookedBookings==null || bookedBookings.isEmpty()) return;
@@ -173,6 +173,15 @@ public class TicketService {
             return "ok";
         } catch (Exception e) {
             log.error("Error while buyResoldTicket: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public String fetchResoldTicketStatus(String ticketNumber){
+        try{
+            return rtRepo.findById(ticketNumber).get().getStatus();
+        } catch (Exception e) {
+            log.error("Error while fetchResoldTicketStatus: {}", e.getMessage());
             return null;
         }
     }

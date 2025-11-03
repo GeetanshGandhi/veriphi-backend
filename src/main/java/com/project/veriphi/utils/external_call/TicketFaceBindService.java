@@ -18,6 +18,7 @@ public class TicketFaceBindService {
     WebClient webClient;
 
     public boolean callForBinding(List<String> tickets, String bookingId) {
+        System.out.println("calling binding");
         TicketFaceBindPayload payload = new TicketFaceBindPayload(bookingId, tickets);
         ResponseEntity<String> response = webClient.post()
                 .uri(AppConstants.BINDING_SERVICE_URL)
@@ -25,6 +26,7 @@ public class TicketFaceBindService {
                 .retrieve()
                 .toEntity(String.class)
                 .block();
+        System.out.println("bind call complete");
         return response != null && response.getStatusCode().is2xxSuccessful();
     }
 

@@ -94,4 +94,16 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/fetchResoldTicketStatus")
+    public ResponseEntity<String> fetchResoldTicketStatus(@RequestBody String ticketNumber) {
+        try {
+            String out = ticketService.fetchResoldTicketStatus(ticketNumber);
+            if(out == null) return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(out, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error while fetchResoldTicketStatus endpoint: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

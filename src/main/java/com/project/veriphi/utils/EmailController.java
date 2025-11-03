@@ -16,6 +16,7 @@ public class EmailController {
 
     @GetMapping("/send")
     public void func(){
+        System.out.println("email endpoint hit");
         emailService.random("Coldplay Concert", "viono", "fuvb", "geetanshgandhi2509@gmail.com", "Geetansh",
                 "32524grbf49btv5");
     }

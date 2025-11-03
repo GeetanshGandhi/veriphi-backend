@@ -50,6 +50,7 @@ public class EmailService {
     public void random(String eventName, String venue, String date, String email, String name,
                                    String bookingId) {
         try {
+            log.info("sending...");
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(senderMail);
             message.setTo(email);
@@ -58,6 +59,7 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("Booking email successfully sent to {}", email);
+            System.out.println("");
         } catch (Exception e) {
             log.error("Error occurred while sending booking email to {} : {}", email, e.getMessage());
         }

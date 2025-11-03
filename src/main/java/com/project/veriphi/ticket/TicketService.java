@@ -88,8 +88,8 @@ public class TicketService {
             ticketRepository.saveAll(createdTickets);
             bookingService.updateStatus(booking, "allotted");
             //call to bind faces to ticket for user bookings
-//            if(!booking.isGroup())
-//              tfbService.callForBinding(ticketNumbers, booking.getBookingId());
+            if(!booking.isGroup())
+              tfbService.callForBinding(ticketNumbers, booking.getBookingId());
             bookingsProcessed.getAndIncrement();
         });
         log.info("Processed {} out of {} bookings successfully", bookingsProcessed.get(), bookings.size());

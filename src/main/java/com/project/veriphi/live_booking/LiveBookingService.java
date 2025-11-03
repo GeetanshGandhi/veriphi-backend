@@ -9,7 +9,7 @@ import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.user.User;
 import com.project.veriphi.user.UserService;
 import com.project.veriphi.utils.AppConstants;
-import com.project.veriphi.utils.EmailService;
+import com.project.veriphi.utils.email.EmailService;
 import com.project.veriphi.utils.UserBookingIdGenerator;
 import com.project.veriphi.utils.LiveBookingCache;
 import lombok.extern.slf4j.Slf4j;

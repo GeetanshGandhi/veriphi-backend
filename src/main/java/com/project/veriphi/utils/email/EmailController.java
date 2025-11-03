@@ -1,4 +1,4 @@
-package com.project.veriphi.utils;
+package com.project.veriphi.utils.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;

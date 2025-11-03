@@ -32,6 +32,21 @@ public class EmailService {
         }
     }
 
+    public void ticketMail(String email, String user, String bookingId) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(senderMail);
+            message.setTo(email);
+            message.setSubject(AppConstants.MAIL_TICKET_SUBJECT);
+            message.setText(String.format(AppConstants.MAIL_TICKET_BODY, user, bookingId));
+
+            mailSender.send(message);
+            log.info("Ticket email successfully sent to {}", email);
+        } catch (Exception e) {
+            log.error("Error occurred while sending ticket email to {} : {}", email, e.getMessage());
+        }
+    }
+
     public void random(String eventName, String venue, String date, String email, String name,
                                    String bookingId) {
         try {

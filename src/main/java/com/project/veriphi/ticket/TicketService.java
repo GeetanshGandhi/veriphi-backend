@@ -9,6 +9,7 @@ import com.project.veriphi.seat.SeatService;
 import com.project.veriphi.seat_category.SeatCategory;
 import com.project.veriphi.seat_category.SeatCategoryService;
 import com.project.veriphi.utils.AppConstants;
+import com.project.veriphi.utils.EmailService;
 import com.project.veriphi.utils.UserBookingIdGenerator;
 import com.project.veriphi.utils.external_call.TicketFaceBindService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,8 @@ public class TicketService {
     EventScheduleService esSvc;
     @Autowired
     TicketFaceBindService tfbService;
+    @Autowired
+    EmailService emailService;
 
     @Scheduled(cron = "0 40 16 * * *")
     public void initiateTicketingForBookedBookings() {
@@ -92,6 +95,7 @@ public class TicketService {
             //call to bind faces to ticket for user bookings
             if(!booking.isGroup())
               tfbService.callForBinding(ticketNumbers, booking.getBookingId());
+            emailService.ticketMail(booking.getBookingEmail(), booking.getBookingEmail(), booking.getBookingId());
             bookingsProcessed.getAndIncrement();
         });
         log.info("Processed {} out of {} bookings successfully", bookingsProcessed.get(), bookings.size());
